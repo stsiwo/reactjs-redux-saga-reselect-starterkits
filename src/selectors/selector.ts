@@ -1,0 +1,342 @@
+import { StateType } from "states/types";
+import { createSelector } from "@reduxjs/toolkit";
+//import { BlogType } from "domain/blog";
+import { getLatestDate, calculateMaxPageNumber, generatePaginationLink } from "src/utils";
+import { denormalize } from "normalizr";
+import { blogSchemaArray } from "states/state";
+//import { TagType } from "domain/tag";
+import { PaginationType, PageLinkType } from "components/common/Pagination/types";
+import { PaginationSelectorType } from "src/selectors/types";
+
+export const rsSelector = {
+  /**
+ * selector function to retrieve data from redux store
+ **/
+
+  /**
+   * check this: https://redux-toolkit.js.org/api/createEntityAdapter
+   **/
+
+  /**
+   *
+   * low level (pure) selector is always run (different from reselect) (no cache)
+   *
+   *
+   **/
+
+  ui: {
+    getLeftNavMenu: (state: StateType) => state.ui.leftNavMenu,
+    getRightNavMenu: (state: StateType) => state.ui.rightNavMenu,
+    getSearchModal: (state: StateType) => state.ui.searchModal,
+  },
+
+  app: {
+    getSearchKeyword: (state: StateType) => state.app.searchKeyword,
+  },
+
+  domain: {
+    getDomain: (state: StateType) => state.domain,
+    //    getBlogData: (state: StateType) => state.domain.blogs,
+    //    getTagData: (state: StateType) => state.domain.tags,
+    //    getCategoryData: (state: StateType) => state.domain.categories,
+  }
+}
+
+/**
+ * memorized selector note:
+ *
+ * it has cache (size 1) capability. so if its particular portion of state tree hasn't change, it returns cached value.
+ *
+ * However, if multiple component instances use the same memorized selector instance, you CAN'T use this cache features. since the memorized selector recognized that revieved arguments are different every time when it is called.
+ *
+ * Therefore, you have to give a copy of momerized selector to each component instance. (I'm not sure it is true when using redux-saga though)
+ *
+ **/
+
+export const mSelector = {
+
+  // ui.leftNavMenu
+  makeLeftNavMenuSelector: () => {
+    return createSelector(
+      [
+        rsSelector.ui.getLeftNavMenu
+      ],
+      (leftNavMenu) => {
+        return leftNavMenu
+      },
+    )
+  },
+
+  // ui.rightNavMenu
+  makeRightNavMenuSelector: () => {
+    return createSelector(
+      [
+        rsSelector.ui.getRightNavMenu
+      ],
+      (rightNavMenu) => {
+        return rightNavMenu
+      },
+    )
+  },
+
+  // ui.searchModal
+  makeSearchModalSelector: () => {
+    return createSelector(
+      [
+        rsSelector.ui.getSearchModal
+      ],
+      (searchModal) => {
+        return searchModal
+      },
+    )
+  },
+
+  // app.searchKeyword
+  makeSearchKeywordSelector: () => {
+    return createSelector(
+      [
+        rsSelector.app.getSearchKeyword
+      ],
+      (keyword) => {
+        return keyword
+      },
+    )
+  },
+
+  //  // domain.blogs
+  //  makeBlogDataSelector: () => {
+  //    return createSelector(
+  //      [
+  //        // need to be domain to denormalize
+  //        rsSelector.domain.getDomain
+  //      ],
+  //      (domain) => {
+  //        /**
+  //         * denormalize 
+  //         *
+  //         * this return { 'domain-name': [{ domain1 }, { domain2 }] in the format
+  //         **/
+  //        const denormalizedEntity = denormalize(
+  //          Object.keys(domain.blogs),
+  //          blogSchemaArray,
+  //          domain,
+  //        )
+  //
+  //        return denormalizedEntity
+  //      },
+  //    )
+  //  },
+  //
+  //  // domain.blogs (search result)
+  //  makeBlogDataBySearchSelector: () => {
+  //    return createSelector(
+  //      [
+  //        // need to be domain to denormalize
+  //        rsSelector.domain.getDomain,
+  //        rsSelector.app.getSearchKeyword
+  //      ],
+  //      (domain, searchKeyword: string) => {
+  //        /**
+  //         * denormalize 
+  //         *
+  //         * this return { 'domain-name': [{ domain1 }, { domain2 }] in the format
+  //         **/
+  //        const denormalizedEntity = denormalize(
+  //          Object.keys(domain.blogs),
+  //          blogSchemaArray,
+  //          domain,
+  //        )
+  //
+  //        if (searchKeyword == "") return denormalizedEntity
+  //
+  //        const temp =  denormalizedEntity
+  //          .filter((blog: BlogType) => {
+  //            /**
+  //             *
+  //             * use String.indexOf(substring) instead of String.includes for older browsers and IE
+  //             * 
+  //             * use String.prototype.indexOf, which returns -1 when a substring cannot be found
+  //             *
+  //             **/
+  //            if (
+  //              blog.title.indexOf(searchKeyword) !== -1
+  //              || blog.description.indexOf(searchKeyword) !== -1
+  //              || blog.category.name.indexOf(searchKeyword) !== -1
+  //              || blog.tags.filter((tag: TagType) => tag.name.indexOf(searchKeyword) !== -1).length > 0
+  //            ) {
+  //              return true
+  //            } else {
+  //              return false
+  //            }
+  //          })
+  //
+  //        log(temp)
+  //
+  //        return temp
+  //
+  //      },
+  //    )
+  //  },
+  //
+  //
+  //  // domain.blogs (order: date desc)
+  //  makeBlogDataDateDescSelector: () => {
+  //    return createSelector(
+  //      [
+  //        // need to be domain to denormalize
+  //        rsSelector.domain.getDomain
+  //      ],
+  //      (domain) => {
+  //        /**
+  //         * denormalize 
+  //         *
+  //         * this return { 'domain-name': [{ domain1 }, { domain2 }] in the format
+  //         **/
+  //        const denormalizedEntity = denormalize(
+  //          Object.keys(domain.blogs),
+  //          blogSchemaArray,
+  //          domain,
+  //        )
+  //
+  //        return denormalizedEntity
+  //          // js sort function logic:
+  //          //
+  //          // coparison function: (a, b) => number
+  //          //  a: first element (e.g., BlogType)
+  //          //  b: second element (e.g., BlogType)
+  //          //  return negative value (e.g., a-b) => a -> b ('a' comes first)
+  //          //  return positive value (e.g., b-a)=> b -> a ('b' comes first)
+  //
+  //          // order: date desc (latest)
+  //          .sort((a: BlogType, b: BlogType) => {
+  //            return getLatestDate(b.createdAt, b.updatedAt).valueOf() - getLatestDate(a.createdAt, a.updatedAt).valueOf()
+  //          })
+  //
+  //      },
+  //    )
+  //  },
+  //
+  //  // domain.blogs
+  //  makeBlogDataByCategorySelector: (categoryPath: string) => {
+  //    return createSelector(
+  //      [
+  //        // need to be domain to denormalize
+  //        rsSelector.domain.getDomain
+  //      ],
+  //      (domain) => {
+  //        /**
+  //         * denormalize 
+  //         *
+  //         * this return { 'domain-name': [{ domain1 }, { domain2 }] in the format
+  //         **/
+  //        const denormalizedEntity = denormalize(
+  //          Object.keys(domain.blogs),
+  //          blogSchemaArray,
+  //          domain,
+  //        )
+  //
+  //        return denormalizedEntity
+  //          // filter to get blogs of a given category
+  //          .filter((blog: BlogType) => blog.category.path === categoryPath)
+  //      },
+  //    )
+  //  },
+  //
+  //  // domain.blogs by category & pagination logic
+  //  makeBlogDataByCategoryWithPaginationSelector: (categoryPath: string, curPage: number) => {
+  //    return createSelector(
+  //      [
+  //        // need to be domain to denormalize
+  //        rsSelector.domain.getDomain
+  //      ],
+  //      (domain) => {
+  //        /**
+  //         * denormalize 
+  //         *
+  //         * this return { 'domain-name': [{ domain1 }, { domain2 }] in the format
+  //         **/
+  //        const denormalizedEntity = denormalize(
+  //          Object.keys(domain.blogs),
+  //          blogSchemaArray,
+  //          domain,
+  //        )
+  //
+  //        // get blogs that blongs to the target category
+  //        const filteredDenormalizedEntity = denormalizedEntity
+  //          // filter to get blogs of a given category
+  //          .filter((blog: BlogType) => blog.category.path === categoryPath)
+  //
+  //        // get total blogs #
+  //        const total = filteredDenormalizedEntity.length
+  //
+  //        // limit is always 10 for this blog app
+  //        const limit = 10
+  //
+  //        const btnNum = 5
+  //
+  //        // get maxPageNum of the pagination
+  //        const maxPageNum = calculateMaxPageNumber(total, limit)
+  //
+  //        // get pageLinkType objects
+  //        const pageLinks: PageLinkType[] = generatePaginationLink(total, limit, curPage, btnNum)
+  //
+  //        const pagination: PaginationType = {
+  //          curPage: curPage,
+  //          maxPage: maxPageNum,
+  //          pageLinks: pageLinks
+  //        }
+  //
+  //        console.log("cur page: " + curPage)
+  //
+  //        // paginate filtered-denormalized entity
+  //        // logic: 
+  //        //  page #1: 0 (index) - 10 (index)
+  //        //  page #2: 10 - 20 
+  //        //  page #3: 20 - 30 
+  //        //
+  //        // slice() can handle error when 2nd argument is beyond the the length of the array.
+  //        //  - 1st arg: start (index)
+  //        //  - 2nd arg: end (index)
+  //        const startIndex = (curPage - 1) * 10 
+  //        const endIndex = startIndex + 10 
+  //        const paginatedEntity = filteredDenormalizedEntity.slice(startIndex, endIndex) 
+  //
+  //        return {
+  //          entities: paginatedEntity,
+  //          pagination: pagination
+  //        }
+  //      },
+  //    )
+  //  },
+  //
+  //  // domain.categories
+  //  makeCategoryDataSelector: () => {
+  //    return createSelector(
+  //      [
+  //        rsSelector.domain.getCategoryData
+  //      ],
+  //      (categoryData) => {
+  //        /**
+  //         * convert object-based domain (normalized) to array-based domain
+  //         **/
+  //        return Object.values(categoryData)
+  //      },
+  //    )
+  //  },
+  //
+  //  // domain.categories
+  //  makeTagDataSelector: () => {
+  //    return createSelector(
+  //      [
+  //        rsSelector.domain.getTagData
+  //      ],
+  //      (tagData) => {
+  //        /**
+  //         * convert object-based domain (normalized) to array-based domain
+  //         **/
+  //        return Object.values(tagData)
+  //      },
+  //    )
+  //  },
+}
+

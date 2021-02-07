@@ -1,0 +1,39 @@
+@import "../../../css/global";
+
+.pagination-wrapper {
+  width: 100vw;
+}
+
+.pagination-content {
+  text-align: center;
+}
+
+.pagination-btn {
+  margin: 0 5px;
+  background-color: transparent;
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 3px 3px;
+  font-size: 1.2em; 
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 1s;
+  width: 30px;
+  height: 30px;
+}
+
+.pagination-btn:focus {
+  outline: none;
+}
+
+.pagination-btn:hover {
+  background-color: #000;
+  color: #fff;
+  transition: all 1s;
+}
+
+.pagination-btn.pagination-btn-selected {
+  background-color: #000;
+  color: #fff;
+}

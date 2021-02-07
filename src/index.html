@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <!-- DON'T FORGET THIS FOR SEO OPTIMIZATION and you DON'T need to specify others unnecessary meta description execpt for title, meta description -->
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+
+    <!--
+      error: Uncaught SyntaxError: Unexpected token '<'
+      solution: add <base> tag
+      reference: https://github.com/webpack/webpack/issues/2882 
+    -->
+    <base href="/" />
+
+    <style>
+      html {
+        width: 100%;
+        font-size: 62.5%;
+        /* prevent horizontal scroll (overflow) at mobile */
+        overflow-x: hidden;
+      }
+      body {
+        margin: 0;
+
+        /* prevent horizontal scroll (overflow) at mobile */
+        position: relative;
+      }
+      #root {
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+{         
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "target": "es5",
+    "lib": ["dom", "es6", "dom.iterable", "es2019.array"],
+    "types": ["reflect-metadata", "jest", "node"],
+    "module": "esnext",
+    "moduleResolution": "node",     
+    "experimentalDecorators": true, 
+    "emitDecoratorMetadata": true,  
+    "esModuleInterop": true,        
+    "downlevelIteration": true,     
+    "jsx": "react",
+    "baseUrl": "./",   
+    "paths": {
+      "hooks/*": ["src/ui/hooks/*"],  
+      "contexts/*": ["src/ui/contexts/*"],
+      "components/*": ["src/ui/components/*"],
+      "ui/*": ["src/ui/*"],
+      "requests/*": ["src/requests/*"],
+      "domain/*": ["src/domain/*"],   
+      "configs/*": ["src/configs/*"], 
+      "actions/*": ["src/actions/*"], 
+      "states/*": ["src/states/*"],   
+      "sideEffects/*": ["src/sideEffects/*"],
+      "reducers/*": ["src/reducers/*"],
+      "src/*": ["src/*"],
+      "static/*": ["src/assets/*"],   
+      "tests/*": ["tests/*"],         
+      "*": ["src/types/*"]
+    }                  
+  }
+}
+

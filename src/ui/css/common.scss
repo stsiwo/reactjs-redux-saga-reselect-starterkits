@@ -1,0 +1,348 @@
+@import '../css/global';
+
+/* z-index */
+/**
+ * BlogLeftAnchorNav: 11000
+ * Nav: 10000
+ * SearchModal: 9500
+ * Header: 9000
+ * category-page-content: 8500
+ * category-bc-layer: 8000 
+ * RightBottomMenu: 7000 (only Home)
+ * 
+ * 
+ *
+ * Home Background (Wave): -1
+ *
+ **/
+
+/* global */
+* {
+  box-sizing: border-box;
+
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  font-family: $mainFontFamily;
+  font-size: $regularFontSize;
+}
+
+/* common */
+
+// used for privacy-policy and terms and condition pages
+.detail-page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.content-wrapper {
+  width: 100vw;
+  height: 100vh;
+}
+
+.input {
+  border: none;
+  background-color: #fff;
+  border-radius: 2px;
+  padding: 8px;
+  border-bottom: 1px solid grey;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.icon {
+  cursor: pointer;
+  margin: 5px;
+}
+
+.icon-size {
+  width: 25px;
+  height: 25px;
+}
+
+.link {
+  text-decoration: none;
+  color: #000;
+  transition: all 0.5s;
+}
+
+// blog item 
+.blog-item-box {
+  min-width: 250px;
+  min-height: 110px;
+
+  // for absolute of img element and left border element (:before)
+  position: relative;
+
+  text-align: start;
+  color: #000;
+  padding-left: 10px;
+
+
+  // need this to align bottom - (1)
+  display: flex;
+  flex-direction: column;
+
+  & > img {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  & > .overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: 0.5;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  & > .blog-item-detail {
+
+    // to make this element be above the image
+    position: relative;
+
+    // need this to align bottom - (1)
+    margin-top: auto;
+
+    & > .blog-item-title {
+      font-weight: bold;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    & > .blog-item-tag-wrapper {
+
+      display: inline-flex;
+      flex-wrap: wrap;
+
+      & > .tag-box {
+        white-space: nowrap;
+        margin: 3px;
+        border: 1px solid #000;
+        border-radius: 15px;
+        padding: 4px;
+        font-size: 0.8em; 
+      }
+    }
+
+    & .blog-item-date-category-box {
+     
+      display: flex; 
+      justify-content: space-between;
+      align-items: center;
+
+
+      & .blog-item-category-box {
+        width: 50px;
+      }
+    }
+  }
+}
+
+.blog-item-box:before {
+  position: absolute;
+  content: " ";
+  background-color: #000;
+  opacity: 0.3;
+  width: 1px;
+  height: 100%;  
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  left: 0;
+}
+
+// horizontal blog item
+$horizontalBlogItemMaxHeight: 100px;
+$horizontalBlogItemMinHeight: 50px;
+
+.horizontal-blog-item-box {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  border-bottom: 1px solid grey;
+
+  @media only screen and (max-width: $mobileLSize +  "px") {
+    padding: 5px;
+  }
+
+
+  & > .horizontal-blog-icon {
+    min-width: $horizontalBlogItemMinHeight;
+    max-width: $horizontalBlogItemMaxHeight;
+
+    @media only screen and (max-width: $mobileLSize +  "px") {
+      width: $horizontalBlogItemMinHeight;
+    }
+
+    @media only screen and (min-width: $mobileLSize + 1 + "px") {
+      width: $horizontalBlogItemMaxHeight;
+    }
+  }
+
+  & > .horizontal-blog-detail {
+
+    width: 100%;
+
+    & > .horizontal-blog-title {
+    }
+
+    & > .horizontal-blog-inner-box {
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      @media only screen and (max-width: $mobileLSize +  "px") {
+        display: block;
+      }
+
+      & > .horizontal-blog-tags {
+
+        & > .horizontal-blog-tag {
+          display: inline-block;
+          white-space: nowrap;
+          margin: 3px;
+          border: 1px solid #000;
+          border-radius: 15px;
+          padding: 3px;
+          font-size: 0.8em;
+        }
+      }
+
+      & > .horizontal-blog-date {
+          font-size: 0.8em;
+          text-align: right;
+          margin-top: 5px;
+      }
+    }
+  } 
+}
+
+/* transition */
+
+.x-180-rotate-transition {
+  transition: all $normalAnimationTime;
+}
+
+.x-180-rotate-transition:hover {
+  transform: rotateX(180deg);
+}
+
+.rotate-90-transition {
+  transition: all $normalAnimationTime;
+}
+
+.rotate-90-transition:hover {
+  transform: rotate(90deg);
+}
+
+.rotate-45-transition {
+  transition: all $normalAnimationTime;
+}
+
+.rotate-45-transition:hover {
+  transform: rotate(45deg);
+}
+
+/* page transition */
+
+// see Nav component
+.page-transition-layer-1 {
+  z-index: 9600;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $mainColor;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// see PageRoute Component
+.route-page-transition-layer {
+  z-index: 9600;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: $myMainColor;
+}
+
+/* slider */
+
+.slider-outer-box {
+  // for absolute in slider-btn
+  position: relative;
+  
+  padding: 5px 24px;
+  max-width: 75vw;
+}
+
+.slider-inner-box {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: auto;
+
+  /* hide scroll (horizontal) bar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+/* hide scroll (horizontal) bar */
+.slider-inner-box::-webkit-scrollbar { /* WebKit */
+  width: 0;
+  height: 0;
+}
+
+.slider-btn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background-color: transparent;
+  transition: all 1s;
+  cursor: pointer;
+}
+
+.slider-btn:hover {
+  background-color: rgba(0, 217, 255, 0.5);
+  transition: all 1s;
+}
+
+.slider-left-btn {
+  left: 0;
+}
+
+.slider-right-btn {
+  right: 0;
+}
+
+.slider-btn-icon {
+  position: relative;
+  top: 50%;
+  bottom: 50%;
+  transform: translateY(-50%);
+  color: $myComplementaryColor;
+}

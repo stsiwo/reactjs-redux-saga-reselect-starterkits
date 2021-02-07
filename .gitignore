@@ -1,0 +1,15 @@
+// node module
+node_modules/
+
+// swp files
+*.swp
+*.swo
+
+// env
+.env.*
+
+// credentials
+.credentials.txt
+
+// production
+dist/
