@@ -10,7 +10,7 @@ import 'ui/css/common.scss';
 const Index = (props: any) => {
 
   return (
-    <div className="app-wrapper">
+    <React.Fragment> 
       <CssGlobalContext.Provider value={CssGlobalContextDefaultState}>
         <Provider store={store}>
           <Router>
@@ -18,7 +18,7 @@ const Index = (props: any) => {
           </Router>
         </Provider>
       </CssGlobalContext.Provider>
-    </div>
+    </React.Fragment> 
   );
 };
 

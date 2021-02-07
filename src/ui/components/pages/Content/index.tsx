@@ -1,10 +1,11 @@
 import * as React from 'react';
+import Search from '../Search';
 
 const Content: React.FunctionComponent<{}> = (props) => {
 
   return (
     <div className="content-wrapper">
-      Content Here
+      <Search />      
     </div>
   )
 }
