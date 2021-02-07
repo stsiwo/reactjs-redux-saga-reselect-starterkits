@@ -1,3 +1,5 @@
+import { FetchStatusEnum } from "src/app/";
+
 //import { NormalizedBlogType } from "domain/blog";
 //import { NormalizedCategoryType } from "domain/category";
 //import { NormalizedTagType } from "domain/tag";
@@ -10,6 +12,7 @@ export declare type UiStateType = {
 
 export declare type AppStateType = {
   searchKeyword: string
+  fetchStatus: FetchStatusEnum
 }
 
 

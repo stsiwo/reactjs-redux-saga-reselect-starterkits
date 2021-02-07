@@ -4,6 +4,7 @@ import { schema } from 'normalizr';
 //import { categoryData } from "./data/category";
 //import { blogData } from "./data/blog";
 import { normalize } from 'normalizr';
+import { FetchStatusEnum } from "src/app";
 
 /**
  *
@@ -73,6 +74,7 @@ export const initialState: StateType = {
   },
   app: {
     searchKeyword: "",
+    fetchStatus: FetchStatusEnum.INITIAL,
   },
   domain: {
     //    blogs: normalizedResult.entities.blogs,
