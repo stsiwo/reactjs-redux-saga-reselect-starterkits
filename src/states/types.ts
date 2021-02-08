@@ -1,4 +1,5 @@
 import { FetchStatusEnum } from "src/app/";
+import { NormalizedAnimeType } from "domain/anime";
 
 //import { NormalizedBlogType } from "domain/blog";
 //import { NormalizedCategoryType } from "domain/category";
@@ -17,7 +18,7 @@ export declare type AppStateType = {
 
 
 export declare type DomainStateType = {
-  //  blogs: NormalizedBlogType
+  animes: NormalizedAnimeType 
   //  categories: NormalizedCategoryType
   //  tags: NormalizedTagType
 }

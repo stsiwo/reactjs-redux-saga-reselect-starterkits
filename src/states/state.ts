@@ -13,53 +13,53 @@ import { FetchStatusEnum } from "src/app";
  **/
 
 // category
-const categorySchemaEntity = new schema.Entity(
-  "categories",
-  {},
-  {
-    // need to override default value ('id')
-    idAttribute: "path",
-  }
-)
+//const categorySchemaEntity = new schema.Entity(
+//  "categories",
+//  {},
+//  {
+//    // need to override default value ('id')
+//    idAttribute: "path",
+//  }
+//)
+//
+//// tags
+//const tagSchemaEntity = new schema.Entity(
+//  "tags",
+//  {},
+//  {
+//    idAttribute: "name",
+//  }
+//)
+//
+//export const tagSchemaArray = new schema.Array(tagSchemaEntity)
 
-// tags
-const tagSchemaEntity = new schema.Entity(
-  "tags",
-  {},
+// anime 
+const animeSchemaEntity = new schema.Entity(
+  "animes",
   {
-    idAttribute: "name",
-  }
-)
-
-export const tagSchemaArray = new schema.Array(tagSchemaEntity)
-
-// blogs
-const blogSchemaEntity = new schema.Entity(
-  "blogs",
-  {
-    category: categorySchemaEntity,
-    tags: tagSchemaArray,
+    //category: categorySchemaEntity,
+    //tags: tagSchemaArray,
   },
   {
-    idAttribute: "path",
+    idAttribute: "id",
   }
 )
-export const blogSchemaArray = new schema.Array(blogSchemaEntity)
+export const animeSchemaArray = new schema.Array(animeSchemaEntity)
 
 // make connection btw blogs and categories
-categorySchemaEntity.define({
-  blogs: blogSchemaArray
-})
+//categorySchemaEntity.define({
+//  blogs: blogSchemaArray
+//})
 
 /**
  *
  * normalize blog data
  *
  **/
-//const normalizedResult = normalize(
-//  blogData,
-//  blogSchemaArray
-//)
+const normalizedResult = normalize(
+  {},
+  animeSchemaArray
+)
 
 /**
  *
@@ -77,7 +77,7 @@ export const initialState: StateType = {
     fetchStatus: FetchStatusEnum.INITIAL,
   },
   domain: {
-    //    blogs: normalizedResult.entities.blogs,
+    animes: normalizedResult.entities.animes,
     //    categories: normalizedResult.entities.categories,
     //    tags: normalizedResult.entities.tags,
   },

@@ -1,5 +1,7 @@
 import * as React from 'react';
 import styled, { createGlobalStyle } from 'styled-components'
+import { useDispatch } from 'react-redux';
+import { fetchAnimeActionCreator } from 'reducers/slices/domain/anime';
 
 const SearchBox = styled.div`
   width: 100vw;
@@ -18,6 +20,14 @@ const SearchResultBox = styled.div`
 `
 
 const Search: React.FunctionComponent<{}> = (props) => {
+
+  const dispatch = useDispatch()
+
+  React.useEffect(() => {
+
+    dispatch(fetchAnimeActionCreator())
+
+  }, [])
 
   return (
     <SearchBox>

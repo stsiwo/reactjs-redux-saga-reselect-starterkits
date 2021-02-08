@@ -3,7 +3,8 @@ import { leftNavMenuSliceReducer, rightNavMenuSliceReducer, searchModalSliceRedu
 //import { blogDataSliceReducer } from './slices/domain/blogs';
 //import { tagDataSliceReducer } from './slices/domain/tags';
 //import { categoryDataSliceReducer } from './slices/domain/categories';
-import { searchKeywordSliceReducer } from './slices/app';
+import { searchKeywordSliceReducer, fetchStatusSliceReducer } from './slices/app';
+import { updateAnimeDataSliceReducer } from './slices/domain/anime';
 
 // ** REFACTOR to new approach **/
 
@@ -20,10 +21,11 @@ export const rootReducer = combineReducers({
 
   app: combineReducers({
     searchKeyword: searchKeywordSliceReducer,
+    fetchStatus: fetchStatusSliceReducer,
   }),
 
   domain: combineReducers({
-    //    blogs: blogDataSliceReducer,
+    animes: updateAnimeDataSliceReducer,
     //    tags: tagDataSliceReducer,
     //    categories: categoryDataSliceReducer,
   })

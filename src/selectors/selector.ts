@@ -3,7 +3,6 @@ import { createSelector } from "@reduxjs/toolkit";
 //import { BlogType } from "domain/blog";
 import { getLatestDate, calculateMaxPageNumber, generatePaginationLink } from "src/utils";
 import { denormalize } from "normalizr";
-import { blogSchemaArray } from "states/state";
 //import { TagType } from "domain/tag";
 import { PaginationType, PageLinkType } from "components/common/Pagination/types";
 import { PaginationSelectorType } from "src/selectors/types";
@@ -36,7 +35,7 @@ export const rsSelector = {
 
   domain: {
     getDomain: (state: StateType) => state.domain,
-    //    getBlogData: (state: StateType) => state.domain.blogs,
+    getAnimeData: (state: StateType) => state.domain.animes,
     //    getTagData: (state: StateType) => state.domain.tags,
     //    getCategoryData: (state: StateType) => state.domain.categories,
   }

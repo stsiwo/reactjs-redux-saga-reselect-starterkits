@@ -11,16 +11,16 @@ import { merge } from "lodash";
  * test fetch anime api 
  *
  **/
-export const fetchAnimeActionCreator = createAction("rs/ui/leftNavMenu/toggle")
+export const fetchAnimeActionCreator = createAction("rs/domain/anime/fetch")
 export const fetchAnimeActionTypeName = fetchAnimeActionCreator().type
 
 /**
  * domain.animes state Slice
  **/
 // action type             
-export type FetchAnimeActionType = PayloadAction<NormalizedAnimeType> 
+export type updateAnimeActionType = PayloadAction<NormalizedAnimeType> 
 
-export const animeDataSlice = createSlice({ 
+export const updateAnimeDataSlice = createSlice({ 
   name: "domain/animes", // a name used in action type
   initialState: {},        
   reducers: {              
@@ -33,7 +33,7 @@ export const animeDataSlice = createSlice({
      *  In this use case, I need to an string param, so I define 'payloadAction<string' like below
      *
      **/
-    merge: (state: NormalizedAnimeType, action: FetchAnimeActionType) => merge(state, action.payload),
+    merge: (state: NormalizedAnimeType, action: PayloadAction<NormalizedAnimeType>) => merge(state, action.payload),
     clear: (state: NormalizedAnimeType) => ({}),
   },
   /**
@@ -43,6 +43,6 @@ export const animeDataSlice = createSlice({
    **/
 }) 
 
-export const animeDataSliceReducer = animeDataSlice.reducer
-export const animeDataActions = animeDataSlice.actions
+export const updateAnimeDataSliceReducer = updateAnimeDataSlice.reducer
+export const updateAnimeDataActions = updateAnimeDataSlice.actions
 
