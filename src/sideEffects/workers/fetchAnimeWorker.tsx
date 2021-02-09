@@ -1,14 +1,14 @@
-import { PayloadAction, Action } from "@reduxjs/toolkit";
-import { call, put, select } from "redux-saga/effects";
-import { leftNavMenuActions } from "reducers/slices/ui";
-import { fetchStatusActions } from "reducers/slices/app";
-import { FetchStatusEnum } from "src/app";
-import axios, { AxiosRequestConfig, AxiosPromise } from 'axios';
-import { updateAnimeDataActions, updateAnimePaginationDataActions, updateAnimeCurItemsDataActions } from "reducers/slices/domain/anime";
+import { PayloadAction } from "@reduxjs/toolkit";
+import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
 import { normalize } from "normalizr";
-import { animeSchemaArray } from "states/state";
+import { fetchStatusActions } from "reducers/slices/app";
+import { updateAnimeCurItemsDataActions, updateAnimeDataActions, updateAnimePaginationDataActions } from "reducers/slices/domain/anime";
+import { call, put, select } from "redux-saga/effects";
+import { FetchStatusEnum } from "src/app";
 import { mSelector } from "src/selectors/selector";
+import { animeSchemaArray } from "states/state";
 import { DomainPaginationType } from "states/types";
+import { CategoryType } from "domain/category";
 
 /**
  * a worker (generator)    
@@ -29,6 +29,11 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
   const curKeyword: string = yield select(mSelector.makeSearchKeywordSelector())
 
   /**
+   * get current category for search
+   **/
+  const curCategory: CategoryType = yield select(mSelector.makeCurCategorySelector())
+
+  /**
    * update status for anime data
    **/
   yield put(
@@ -44,6 +49,9 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
     let targetUrl = `https://kitsu.io/api/edge/anime?page[limit]=${curPagination.limit}&page[offset]=${curPagination.offset}`
     if (curKeyword) {
       targetUrl += `&filter[text]=${curKeyword}` 
+    }
+    if (curCategory && curCategory.id != -1) { // default category id is -1 so exclude this also
+      targetUrl += `&filter[categories]=${curCategory.attributes.title}` 
     }
 
     console.log("keyword")

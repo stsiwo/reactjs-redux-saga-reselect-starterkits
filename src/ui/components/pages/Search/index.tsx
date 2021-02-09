@@ -7,7 +7,9 @@ import { AnimeType } from 'domain/anime';
 import { DomainPaginationType } from 'states/types';
 import Pagination from 'components/common/Pagination';
 import { convertPageToOffset } from 'src/utils';
-import { searchKeywordActions } from 'reducers/slices/app';
+import { searchKeywordActions, curCategoryActions } from 'reducers/slices/app';
+import { CategoryType } from 'domain/category';
+import { fetchCategoryActionCreator } from 'reducers/slices/domain/categories';
 
 const SearchBox = styled.div`
   width: 100vw;
@@ -40,6 +42,14 @@ const ItemList = styled.div`
   flex-wrap: wrap;
 `
 
+const CategoryFilterBox = styled.div``
+
+const CategorySearchInputBox = styled.div``
+
+const CategorySearchResultBox = styled.select``
+
+const CategoryItem = styled.option``
+
 
 const Search: React.FunctionComponent<{}> = (props) => {
 
@@ -54,18 +64,6 @@ const Search: React.FunctionComponent<{}> = (props) => {
    * pagination
    **/
   const curPagination: DomainPaginationType = useSelector(mSelector.makeAnimePaginationDataSelector())
-
-  /**
-   * initial anime fetch (only once)
-   *  
-   **/
-  React.useEffect(() => {
-    dispatch(fetchAnimeActionCreator())
-  }, [
-    curPagination.limit,
-    curPagination.offset,
-    curPagination.total
-  ])
 
   /**
    * onClick event handler for pagination click
@@ -98,7 +96,69 @@ const Search: React.FunctionComponent<{}> = (props) => {
     // cancel pagination
     dispatch(updateAnimePaginationDataActions.clear())
   }
-  
+
+  /**
+   * category search feature
+   **/
+  const curCategory = useSelector(mSelector.makeCurCategorySelector())
+  const [curCategorySearchKeyword, setCategorySearchKeyword] = React.useState<string>("")
+  const categories = useSelector(mSelector.makeCategoryWithFilterDataSelector(curCategorySearchKeyword))
+  const handleCategorySearchChangeEvent: React.EventHandler<React.ChangeEvent<HTMLInputElement>> = (e) => {
+    // filter category items and display those on the list
+    const nextCategorySearchKeyword = e.currentTarget.value
+    setCategorySearchKeyword(nextCategorySearchKeyword)
+  }
+
+  const [curCategoryId, setCurCategoryId] = React.useState<number>(-1) // put default value (-1) to avoid 'calling toSTring() of undefined'
+  const handleCategorySelectChangeEvent: React.EventHandler<React.ChangeEvent<HTMLSelectElement>> = (e) => {
+    console.log("select option changed")
+    const nextCurCategoryId: number = parseInt(e.currentTarget.value)
+
+    console.log(nextCurCategoryId)
+
+    // search this category by id through 'categories'
+    const nextCurCategory: CategoryType = categories.find((category: CategoryType) => category.id == nextCurCategoryId)
+
+    console.log(nextCurCategory)
+
+    // update curCategory (app state)
+    dispatch(curCategoryActions.update(nextCurCategory))
+
+    // update curCategoryId (local state)
+    setCurCategoryId(nextCurCategoryId)
+    
+    // cancel pagination
+    dispatch(updateAnimePaginationDataActions.clear())
+  }
+
+  const renderCategoryComponents: () => React.ReactNode = () => {
+    return categories.map((category: CategoryType) => {
+      return (
+        <CategoryItem value={category.id}>
+          {category.attributes.title}
+        </CategoryItem>
+      ) 
+    }) 
+  }
+
+  // initial fetch categories (only once)
+  React.useEffect(() => {
+    dispatch(fetchCategoryActionCreator())
+  }, [])
+
+  /**
+   * initial anime fetch (only once)
+   *  
+   **/
+  React.useEffect(() => {
+    dispatch(fetchAnimeActionCreator())
+  }, [
+    curPagination.limit,
+    curPagination.offset,
+    curPagination.total,
+    curCategory.id,
+  ])
+
 
   /**
    * render anime components
@@ -123,6 +183,14 @@ const Search: React.FunctionComponent<{}> = (props) => {
           <label htmlFor="search-keyword">Search</label>
           <input type="text" placeholder="any keyword here..." name="search-keyword" onChange={handleSearchKeywordChangeEvent}/>
         </div>
+        <CategoryFilterBox>
+          <CategorySearchInputBox>
+            <input type="text" placeholder="filter your category here..." onChange={handleCategorySearchChangeEvent}/>
+          </CategorySearchInputBox>
+          <CategorySearchResultBox onChange={handleCategorySelectChangeEvent} value={curCategoryId.toString()}>
+            {categories && categories.length > 0 && renderCategoryComponents()} 
+          </CategorySearchResultBox>
+        </CategoryFilterBox>
         <div>
           <label htmlFor="filters">Filters</label>
           <input type="radio" value="1" name="filter" /> Opt 1

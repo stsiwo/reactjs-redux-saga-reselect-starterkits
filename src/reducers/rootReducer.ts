@@ -3,8 +3,9 @@ import { leftNavMenuSliceReducer, rightNavMenuSliceReducer, searchModalSliceRedu
 //import { blogDataSliceReducer } from './slices/domain/blogs';
 //import { tagDataSliceReducer } from './slices/domain/tags';
 //import { categoryDataSliceReducer } from './slices/domain/categories';
-import { searchKeywordSliceReducer, fetchStatusSliceReducer } from './slices/app';
+import { searchKeywordSliceReducer, fetchStatusSliceReducer, curCategorySliceReducer, categoryFetchStatusSliceReducer } from './slices/app';
 import { updateAnimeDataSliceReducer, updateAnimePaginationDataSliceReducer, updateAnimeCurItemsDataSliceReducer } from './slices/domain/anime';
+import { categoryDataSliceReducer } from './slices/domain/categories';
 
 // ** REFACTOR to new approach **/
 
@@ -22,16 +23,17 @@ export const rootReducer = combineReducers({
   app: combineReducers({
     searchKeyword: searchKeywordSliceReducer,
     fetchStatus: fetchStatusSliceReducer,
+    categoryFetchStatus: categoryFetchStatusSliceReducer,
+    curCategory: curCategorySliceReducer,
   }),
 
   domain: combineReducers({
     animes: combineReducers({
-      data: updateAnimeDataSliceReducer,
-      pagination: updateAnimePaginationDataSliceReducer,
-      curItems: updateAnimeCurItemsDataSliceReducer,
-    })
-    //    tags: tagDataSliceReducer,
-    //    categories: categoryDataSliceReducer,
+      data: updateAnimeDataSliceReducer, // naming wierd. just remove 'update' when #REFACTOR
+      pagination: updateAnimePaginationDataSliceReducer, // naming wierd. just remove 'update' when #REFACTOR
+      curItems: updateAnimeCurItemsDataSliceReducer, // naming wierd. just remove 'update' when #REFACTOR
+    }),
+    categories: categoryDataSliceReducer,
   })
 })
 

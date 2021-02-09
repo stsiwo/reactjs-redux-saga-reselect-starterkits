@@ -9,8 +9,6 @@ import { DomainStateSubType, DomainPaginationType } from "states/types";
  *
  *  - use this in index.tsx at watchers
  *
- * test fetch anime api 
- *
  **/
 export const fetchAnimeActionCreator = createAction("rs/domain/anime/fetch")
 export const fetchAnimeActionTypeName = fetchAnimeActionCreator().type

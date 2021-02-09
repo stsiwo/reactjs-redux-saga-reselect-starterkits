@@ -1,5 +1,6 @@
 import { FetchStatusEnum } from "src/app/";
 import { NormalizedAnimeType } from "domain/anime";
+import { CategoryType } from "domain/category";
 
 //import { NormalizedBlogType } from "domain/blog";
 //import { NormalizedCategoryType } from "domain/category";
@@ -14,6 +15,8 @@ export declare type UiStateType = {
 export declare type AppStateType = {
   searchKeyword: string
   fetchStatus: FetchStatusEnum
+  categoryFetchStatus: FetchStatusEnum
+  curCategory: CategoryType
 }
 
 export declare type DomainPaginationType = {
@@ -28,11 +31,9 @@ export declare type DomainStateSubType<D extends Record<string, any>> = {
   curItems: string[]
 }
 
-
 export declare type DomainStateType = {
   animes: DomainStateSubType<NormalizedAnimeType> 
-  //  categories: NormalizedCategoryType
-  //  tags: NormalizedTagType
+  categories: CategoryType[]  // we don't store any unnecessary data so don't normalize
 }
 
 export declare type StateType = {

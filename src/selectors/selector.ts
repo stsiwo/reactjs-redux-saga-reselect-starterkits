@@ -9,6 +9,7 @@ import { PaginationSelectorType } from "src/selectors/types";
 import { animeSchemaArray } from "states/state";
 import isEmpty from 'lodash'
 import { AnimeType } from "domain/anime";
+import { CategoryType } from "domain/category";
 
 export const rsSelector = {
   /**
@@ -23,7 +24,6 @@ export const rsSelector = {
    *
    * low level (pure) selector is always run (different from reselect) (no cache)
    *
-   *
    **/
 
   ui: {
@@ -34,6 +34,8 @@ export const rsSelector = {
 
   app: {
     getSearchKeyword: (state: StateType) => state.app.searchKeyword,
+    getFetchStatus: (state: StateType) => state.app.fetchStatus,
+    getCurCategory: (state: StateType) => state.app.curCategory,
   },
 
   domain: {
@@ -41,8 +43,7 @@ export const rsSelector = {
     getAnimeData: (state: StateType) => state.domain.animes.data,
     getAnimePaginationData: (state: StateType) => state.domain.animes.pagination,
     getAnimeCurItemsData: (state: StateType) => state.domain.animes.curItems,
-    //    getTagData: (state: StateType) => state.domain.tags,
-    //    getCategoryData: (state: StateType) => state.domain.categories,
+    getCategoryData: (state: StateType) => state.domain.categories,
   }
 }
 
@@ -107,6 +108,30 @@ export const mSelector = {
     )
   },
 
+  // app.fetchStatus
+  makeFetchStatusSelector: () => {
+    return createSelector(
+      [
+        rsSelector.app.getFetchStatus
+      ],
+      (fetchStatus) => {
+        return fetchStatus
+      },
+    )
+  },
+
+  // app.curCategory
+  makeCurCategorySelector: () => {
+    return createSelector(
+      [
+        rsSelector.app.getCurCategory
+      ],
+      (curCategory) => {
+        return curCategory
+      },
+    )
+  },
+
   // domain.animes
   makeAnimeDataSelector: () => {
     return createSelector(
@@ -135,7 +160,7 @@ export const mSelector = {
           Object.keys(animes), // ex, [0, 1, 2, 3, 4] ('result' prop of normalized data)
           animeSchemaArray,
           {
-            animes: animes 
+            animes: animes
           }, // entities prop of normalized data (ex, { animes: { "1": { ... }, "2": { ... }, ... }})
         )
 
@@ -168,6 +193,53 @@ export const mSelector = {
       },
     )
   },
+
+  // domain.categories
+  makeCategoryWithFilterDataSelector: (categoryKeyword: string) => {
+    return createSelector(
+      [
+        // need to be domain to denormalize
+        rsSelector.domain.getCategoryData,
+      ],
+      (categories) => {
+
+        console.log("category")
+        console.log(categories)
+        
+        if (!categoryKeyword) {
+          return categories
+        }
+
+        const filteredCategories = categories
+          .filter((category: CategoryType) => {
+            /**
+             *
+             * use String.indexOf(substring) instead of String.includes for older browsers and IE
+             *
+             * use String.prototype.indexOf, which returns -1 when a substring cannot be found
+             *
+             **/
+            if (
+              category.attributes.title.indexOf(categoryKeyword) !== -1
+              //|| category.attributes.description.indexOf(categoryKeyword) !== -1
+            ) {
+              return true
+            } else {
+              return false
+            }
+          })
+
+        console.log("after filter")
+        console.log(filteredCategories)
+
+        return filteredCategories
+      },
+    )
+  },
+
+
+
+
   //
   //  // domain.blogs (search result)
   //  makeBlogDataBySearchSelector: () => {

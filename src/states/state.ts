@@ -68,6 +68,14 @@ export const initialState: StateType = {
   app: {
     searchKeyword: "",
     fetchStatus: FetchStatusEnum.INITIAL,
+    categoryFetchStatus: FetchStatusEnum.INITIAL,
+    curCategory: {
+      id: -1,
+      attributes: {
+        title: "default value", 
+        description: "default value",
+      }
+    }, // set fake default category object to avoid null error for the 2nd arg in useEffect
   },
   domain: {
     animes: {
@@ -78,7 +86,8 @@ export const initialState: StateType = {
         total: 0,
       },
       curItems: [],
-    }
+    },
+    categories: [],
     //    categories: normalizedResult.entities.categories,
     //    tags: normalizedResult.entities.tags,
   },

@@ -1,5 +1,5 @@
-import { takeEvery, take, all, spawn, call } from 'redux-saga/effects'
-import { leftNavMenuWatcher, fetchAnimeWatcher} from './watchers';
+import { all, call, spawn } from 'redux-saga/effects';
+import { fetchAnimeWatcher, fetchCategoryWatcher, leftNavMenuWatcher } from './watchers';
 
 export function* rootSaga() {
   console.log("start rootSaga ...")
@@ -13,6 +13,7 @@ export function* rootSaga() {
   const sagas: any[] = [
     leftNavMenuWatcher,
     fetchAnimeWatcher,
+    fetchCategoryWatcher,
   ];
 
   /**
