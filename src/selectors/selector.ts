@@ -118,9 +118,6 @@ export const mSelector = {
       ],
       (animes, pagination, curItems) => {
 
-        console.log("domain animes")
-        console.log(animes)
-
         /**
          * return empty array before fetch
          **/
@@ -129,8 +126,6 @@ export const mSelector = {
           return []
         }
 
-        console.log("keys")
-        console.log(Object.keys(animes))
         /**
          * denormalize 
          *

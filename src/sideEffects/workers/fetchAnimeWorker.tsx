@@ -24,6 +24,11 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
   const curPagination: DomainPaginationType = yield select(mSelector.makeAnimePaginationDataSelector())
 
   /**
+   * get current keyword for seach
+   **/
+  const curKeyword: string = yield select(mSelector.makeSearchKeywordSelector())
+
+  /**
    * update status for anime data
    **/
   yield put(
@@ -34,20 +39,30 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
    * fetch data
    **/
   try {
+
+    // prep keyword if necessary
+    let targetUrl = `https://kitsu.io/api/edge/anime?page[limit]=${curPagination.limit}&page[offset]=${curPagination.offset}`
+    if (curKeyword) {
+      targetUrl += `&filter[text]=${curKeyword}` 
+    }
+
+    console.log("keyword")
+    console.log(curKeyword)
+    console.log(targetUrl)
+
+    // start fetching
     const response = yield call<(config: AxiosRequestConfig) => AxiosPromise>(axios, {
       method: "get",
-      url: `https://kitsu.io/api/edge/anime?page[limit]=${curPagination.limit}&page[offset]=${curPagination.offset}`,
+      url: targetUrl,
     })
 
     console.log(response)
-
     console.log(response.data.data)
 
     /**
      * normalize response data
      **/
     const normalizedData = normalize(response.data.data, animeSchemaArray)
-
     console.log(normalizedData)
 
     /**

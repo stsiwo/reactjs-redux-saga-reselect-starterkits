@@ -7,6 +7,7 @@ import { AnimeType } from 'domain/anime';
 import { DomainPaginationType } from 'states/types';
 import Pagination from 'components/common/Pagination';
 import { convertPageToOffset } from 'src/utils';
+import { searchKeywordActions } from 'reducers/slices/app';
 
 const SearchBox = styled.div`
   width: 100vw;
@@ -86,6 +87,20 @@ const Search: React.FunctionComponent<{}> = (props) => {
   }
 
   /**
+   * keyword search feature
+   **/
+  const handleSearchKeywordChangeEvent: React.EventHandler<React.ChangeEvent<HTMLInputElement>> = (e) => {
+
+    // update keyword
+    const nextKeyword: string = e.currentTarget.value
+    dispatch(searchKeywordActions.update(nextKeyword))
+
+    // cancel pagination
+    dispatch(updateAnimePaginationDataActions.clear())
+  }
+  
+
+  /**
    * render anime components
    *
    **/
@@ -106,7 +121,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
       <SearchControllerBox>
         <div>
           <label htmlFor="search-keyword">Search</label>
-          <input type="text" placeholder="any keyword here..." name="search-keyword"/>
+          <input type="text" placeholder="any keyword here..." name="search-keyword" onChange={handleSearchKeywordChangeEvent}/>
         </div>
         <div>
           <label htmlFor="filters">Filters</label>
@@ -126,9 +141,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
           total={curPagination.total}
           btnNum={5}
           onClick={handlePaginationClickEvent}
-
         />
-    
       </SearchResultBox>
     </SearchBox>
   )

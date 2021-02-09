@@ -1,4 +1,4 @@
-import { takeEvery, takeLatest } from 'redux-saga/effects';
+import { takeEvery, takeLatest, throttle } from 'redux-saga/effects';
 import { leftNavMenuWorkerWorker } from 'sideEffects/workers/leftNavMenuWorker';
 import { toggleLeftNavMenuActionTypeName } from 'reducers/slices/ui';
 import { fetchAnimeWorker } from 'sideEffects/workers/fetchAnimeWorker';
@@ -20,7 +20,8 @@ export function* leftNavMenuWatcher() {
 
 
 export function* fetchAnimeWatcher() {
-  yield takeLatest(
+  yield throttle(
+    500,
     fetchAnimeActionTypeName,
     fetchAnimeWorker,
   )

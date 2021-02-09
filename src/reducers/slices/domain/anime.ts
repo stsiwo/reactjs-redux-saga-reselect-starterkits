@@ -73,7 +73,12 @@ export const updateAnimePaginationDataSlice = createSlice({
      *  In this use case, I need to an string param, so I define 'payloadAction<string' like below
      *
      **/
-    update: (state: DomainPaginationType, action: PayloadAction<DomainPaginationType>) => action.payload 
+    update: (state: DomainPaginationType, action: PayloadAction<DomainPaginationType>) => action.payload,
+    clear: (state: DomainPaginationType) => ({
+      limit: 10,
+      offset: 0,
+      total: 0,
+    })
   },
   /**
    * extraReducers property
@@ -105,7 +110,7 @@ export const updateAnimeCurItemsDataSlice = createSlice({
      *  In this use case, I need to an string param, so I define 'payloadAction<string' like below
      *
      **/
-    update: (state: string[], action: PayloadAction<string[]>) => action.payload 
+    update: (state: string[], action: PayloadAction<string[]>) => action.payload
   },
   /**
    * extraReducers property
