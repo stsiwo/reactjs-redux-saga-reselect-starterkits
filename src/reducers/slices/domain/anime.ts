@@ -85,3 +85,35 @@ export const updateAnimePaginationDataSlice = createSlice({
 export const updateAnimePaginationDataSliceReducer = updateAnimePaginationDataSlice.reducer
 export const updateAnimePaginationDataActions = updateAnimePaginationDataSlice.actions
 
+
+/**
+ * update anime curItems ('result' prop of normalizr) state
+ *
+ **/
+export type updateAnimeCurItemsDataActionType = PayloadAction<string[]>
+
+export const updateAnimeCurItemsDataSlice = createSlice({
+  name: "domain/animes/curItems", // a name used in action type
+  initialState: {},
+  reducers: {
+    /**
+     *
+     *  a property name gonna be the name of action
+     *  its value is the reduce
+     *
+     *  If you need to define the param of the action, use PayloadAction<X> to define its type.
+     *  In this use case, I need to an string param, so I define 'payloadAction<string' like below
+     *
+     **/
+    update: (state: string[], action: PayloadAction<string[]>) => action.payload 
+  },
+  /**
+   * extraReducers property
+   *
+   * You can respond to other action types besides the types it has generated.                                  
+   **/
+})
+
+export const updateAnimeCurItemsDataSliceReducer = updateAnimeCurItemsDataSlice.reducer
+export const updateAnimeCurItemsDataActions = updateAnimeCurItemsDataSlice.actions
+

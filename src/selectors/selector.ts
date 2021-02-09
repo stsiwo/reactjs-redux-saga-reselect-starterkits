@@ -8,6 +8,7 @@ import { PaginationType, PageLinkType } from "components/common/Pagination/types
 import { PaginationSelectorType } from "src/selectors/types";
 import { animeSchemaArray } from "states/state";
 import isEmpty from 'lodash'
+import { AnimeType } from "domain/anime";
 
 export const rsSelector = {
   /**
@@ -39,6 +40,7 @@ export const rsSelector = {
     getDomain: (state: StateType) => state.domain,
     getAnimeData: (state: StateType) => state.domain.animes.data,
     getAnimePaginationData: (state: StateType) => state.domain.animes.pagination,
+    getAnimeCurItemsData: (state: StateType) => state.domain.animes.curItems,
     //    getTagData: (state: StateType) => state.domain.tags,
     //    getCategoryData: (state: StateType) => state.domain.categories,
   }
@@ -110,9 +112,11 @@ export const mSelector = {
     return createSelector(
       [
         // need to be domain to denormalize
-        rsSelector.domain.getAnimeData
+        rsSelector.domain.getAnimeData,
+        rsSelector.domain.getAnimePaginationData,
+        rsSelector.domain.getAnimeCurItemsData,
       ],
-      (animes) => {
+      (animes, pagination, curItems) => {
 
         console.log("domain animes")
         console.log(animes)
@@ -140,13 +144,23 @@ export const mSelector = {
           }, // entities prop of normalized data (ex, { animes: { "1": { ... }, "2": { ... }, ... }})
         )
 
-        console.log("denormalized data")
-        console.log(denormalizedEntity)
-  
-        return denormalizedEntity
+        /**
+         * filter items with paginaiton
+         *
+         *  - RE-IMPLEMENTATION REQUIRED:
+         *    - if a user skip the some pages, for example, when the user click page # 4 after initial fetch, this logic does not work. especially, return empty array since the elements based on the index range does not exist.
+         *    - solution: use 'result' prop of normalizr:)
+         *
+         *    
+         *
+         **/
+        const filteredDenormalizedEntity = denormalizedEntity.filter((anime: AnimeType) => curItems.includes(anime.id) ? true : false)
+
+        return filteredDenormalizedEntity
       },
     )
   },
+
   // domain.animes
   makeAnimePaginationDataSelector: () => {
     return createSelector(

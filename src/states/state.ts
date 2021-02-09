@@ -76,7 +76,8 @@ export const initialState: StateType = {
         limit: 10,
         offset: 0,
         total: 0,
-      }
+      },
+      curItems: [],
     }
     //    categories: normalizedResult.entities.categories,
     //    tags: normalizedResult.entities.tags,

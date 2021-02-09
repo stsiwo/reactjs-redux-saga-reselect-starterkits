@@ -4,7 +4,7 @@ import { leftNavMenuSliceReducer, rightNavMenuSliceReducer, searchModalSliceRedu
 //import { tagDataSliceReducer } from './slices/domain/tags';
 //import { categoryDataSliceReducer } from './slices/domain/categories';
 import { searchKeywordSliceReducer, fetchStatusSliceReducer } from './slices/app';
-import { updateAnimeDataSliceReducer, updateAnimePaginationDataSliceReducer } from './slices/domain/anime';
+import { updateAnimeDataSliceReducer, updateAnimePaginationDataSliceReducer, updateAnimeCurItemsDataSliceReducer } from './slices/domain/anime';
 
 // ** REFACTOR to new approach **/
 
@@ -28,6 +28,7 @@ export const rootReducer = combineReducers({
     animes: combineReducers({
       data: updateAnimeDataSliceReducer,
       pagination: updateAnimePaginationDataSliceReducer,
+      curItems: updateAnimeCurItemsDataSliceReducer,
     })
     //    tags: tagDataSliceReducer,
     //    categories: categoryDataSliceReducer,

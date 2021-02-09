@@ -4,7 +4,7 @@ import { leftNavMenuActions } from "reducers/slices/ui";
 import { fetchStatusActions } from "reducers/slices/app";
 import { FetchStatusEnum } from "src/app";
 import axios, { AxiosRequestConfig, AxiosPromise } from 'axios';
-import { updateAnimeDataActions, updateAnimePaginationDataActions } from "reducers/slices/domain/anime";
+import { updateAnimeDataActions, updateAnimePaginationDataActions, updateAnimeCurItemsDataActions } from "reducers/slices/domain/anime";
 import { normalize } from "normalizr";
 import { animeSchemaArray } from "states/state";
 import { mSelector } from "src/selectors/selector";
@@ -69,6 +69,13 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
         offset: curPagination.offset,
         total: response.data.meta.count // total count path is 'response.data.meta.count'
       })
+    )
+
+    /**
+     * update curItems of this request
+     **/
+    yield put(
+      updateAnimeCurItemsDataActions.update(normalizedData.result) 
     )
 
     /**

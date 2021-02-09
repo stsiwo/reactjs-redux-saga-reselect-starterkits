@@ -25,6 +25,7 @@ export declare type DomainPaginationType = {
 export declare type DomainStateSubType<D extends Record<string, any>> = {
   data: D
   pagination: DomainPaginationType
+  curItems: string[]
 }
 
 
