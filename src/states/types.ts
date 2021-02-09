@@ -16,9 +16,20 @@ export declare type AppStateType = {
   fetchStatus: FetchStatusEnum
 }
 
+export declare type DomainPaginationType = {
+  limit: number
+  offset: number
+  total: number
+}
+
+export declare type DomainStateSubType<D extends Record<string, any>> = {
+  data: D
+  pagination: DomainPaginationType
+}
+
 
 export declare type DomainStateType = {
-  animes: NormalizedAnimeType 
+  animes: DomainStateSubType<NormalizedAnimeType> 
   //  categories: NormalizedCategoryType
   //  tags: NormalizedTagType
 }

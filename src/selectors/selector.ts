@@ -6,6 +6,8 @@ import { denormalize } from "normalizr";
 //import { TagType } from "domain/tag";
 import { PaginationType, PageLinkType } from "components/common/Pagination/types";
 import { PaginationSelectorType } from "src/selectors/types";
+import { animeSchemaArray } from "states/state";
+import isEmpty from 'lodash'
 
 export const rsSelector = {
   /**
@@ -35,7 +37,8 @@ export const rsSelector = {
 
   domain: {
     getDomain: (state: StateType) => state.domain,
-    getAnimeData: (state: StateType) => state.domain.animes,
+    getAnimeData: (state: StateType) => state.domain.animes.data,
+    getAnimePaginationData: (state: StateType) => state.domain.animes.pagination,
     //    getTagData: (state: StateType) => state.domain.tags,
     //    getCategoryData: (state: StateType) => state.domain.categories,
   }
@@ -102,29 +105,60 @@ export const mSelector = {
     )
   },
 
-  //  // domain.blogs
-  //  makeBlogDataSelector: () => {
-  //    return createSelector(
-  //      [
-  //        // need to be domain to denormalize
-  //        rsSelector.domain.getDomain
-  //      ],
-  //      (domain) => {
-  //        /**
-  //         * denormalize 
-  //         *
-  //         * this return { 'domain-name': [{ domain1 }, { domain2 }] in the format
-  //         **/
-  //        const denormalizedEntity = denormalize(
-  //          Object.keys(domain.blogs),
-  //          blogSchemaArray,
-  //          domain,
-  //        )
-  //
-  //        return denormalizedEntity
-  //      },
-  //    )
-  //  },
+  // domain.animes
+  makeAnimeDataSelector: () => {
+    return createSelector(
+      [
+        // need to be domain to denormalize
+        rsSelector.domain.getAnimeData
+      ],
+      (animes) => {
+
+        console.log("domain animes")
+        console.log(animes)
+
+        /**
+         * return empty array before fetch
+         **/
+        if (Object.keys(animes).length === 0) {
+          console.log("empty")
+          return []
+        }
+
+        console.log("keys")
+        console.log(Object.keys(animes))
+        /**
+         * denormalize 
+         *
+         * this return { 'domain-name': [{ domain1 }, { domain2 }] in the format
+         **/
+        const denormalizedEntity = denormalize(
+          Object.keys(animes), // ex, [0, 1, 2, 3, 4] ('result' prop of normalized data)
+          animeSchemaArray,
+          {
+            animes: animes 
+          }, // entities prop of normalized data (ex, { animes: { "1": { ... }, "2": { ... }, ... }})
+        )
+
+        console.log("denormalized data")
+        console.log(denormalizedEntity)
+  
+        return denormalizedEntity
+      },
+    )
+  },
+  // domain.animes
+  makeAnimePaginationDataSelector: () => {
+    return createSelector(
+      [
+        // need to be domain to denormalize
+        rsSelector.domain.getAnimePaginationData
+      ],
+      (pagination) => {
+        return pagination
+      },
+    )
+  },
   //
   //  // domain.blogs (search result)
   //  makeBlogDataBySearchSelector: () => {

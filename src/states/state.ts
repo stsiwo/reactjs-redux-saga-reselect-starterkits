@@ -36,13 +36,6 @@ import { FetchStatusEnum } from "src/app";
 // anime 
 const animeSchemaEntity = new schema.Entity(
   "animes",
-  {
-    //category: categorySchemaEntity,
-    //tags: tagSchemaArray,
-  },
-  {
-    idAttribute: "id",
-  }
 )
 export const animeSchemaArray = new schema.Array(animeSchemaEntity)
 
@@ -77,7 +70,14 @@ export const initialState: StateType = {
     fetchStatus: FetchStatusEnum.INITIAL,
   },
   domain: {
-    animes: normalizedResult.entities.animes,
+    animes: {
+      data: {},
+      pagination: {
+        limit: 10,
+        offset: 0,
+        total: 0,
+      }
+    }
     //    categories: normalizedResult.entities.categories,
     //    tags: normalizedResult.entities.tags,
   },

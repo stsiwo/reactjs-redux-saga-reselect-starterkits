@@ -1,17 +1,24 @@
 import * as React from 'react';
 import "./style.scss"
 import { PageLinkType, PaginationPropsType } from './types';
+import { convertOffsetToPage, calculateMaxPageNumber, generatePaginationLink } from 'src/utils';
 
 const Pagination: React.FunctionComponent<PaginationPropsType> = (props) => {
+
+  const curPage = convertOffsetToPage(props.total, props.limit, props.offset)
+
+  const maxPage = calculateMaxPageNumber(props.total, props.limit)
+
+  const pageLinks = generatePaginationLink(props.total, props.limit, curPage, props.btnNum)
 
   /**
    * better use icon for << and >>
    **/
   const renderPagination: () => React.ReactNode = () => {
-    return props.pageLinks.map((page: PageLinkType) => {
+    return pageLinks.map((page: PageLinkType) => {
       return (
         <button 
-          className={ props.curPage == page.num ? "pagination-btn pagination-btn-selected" : "pagination-btn" }
+          className={ curPage == page.num ? "pagination-btn pagination-btn-selected" : "pagination-btn" }
           value={page.num} 
           key={page.num} 
           onClick={props.onClick}
@@ -22,12 +29,12 @@ const Pagination: React.FunctionComponent<PaginationPropsType> = (props) => {
     })
   }
 
-  return (props.pageLinks && props.pageLinks.length > 0 &&
+  return (pageLinks && pageLinks.length > 0 &&
     <div className="pagination-wrapper" >
       <div className="pagination-content" >
         <button className="pagination-btn" value={1} key={1} onClick={props.onClick}>&laquo;</button>
         {renderPagination()}
-        <button className="pagination-btn" value={props.maxPage} key={props.maxPage} onClick={props.onClick}>&raquo;</button>
+        <button className="pagination-btn" value={maxPage} key={maxPage} onClick={props.onClick}>&raquo;</button>
       </div>
     </div>
   );

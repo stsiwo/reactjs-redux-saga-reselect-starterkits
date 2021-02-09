@@ -284,6 +284,14 @@ export const calcCurEllipsePosY: (elId: number, radiusWidth: number, radiusHeigh
 /**
  * pagination
  **/
+export const convertPageToOffset: (total: number, limit: number, page: number) => number = (total, limit, page) => {
+  return (page - 1) * limit;
+}
+
+export const convertOffsetToPage: (total: number, limit: number, offset: number) => number = (total, limit, offset) => {
+  return (offset / limit) + 1;
+}
+
 export const calculateMaxPageNumber: (total: number, limit: number) => number = (total, limit) => {
   return Math.ceil(total / limit)
 }

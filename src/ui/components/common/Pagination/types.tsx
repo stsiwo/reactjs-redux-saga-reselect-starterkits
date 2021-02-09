@@ -3,9 +3,10 @@ export type PageLinkType = {
 }
 
 export type PaginationType = {
-  curPage: number
-  maxPage: number
-  pageLinks: PageLinkType[]
+  offset: number
+  limit: number
+  total: number
+  btnNum: number
 }
 
 export type PaginationPropsType = {
