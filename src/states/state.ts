@@ -76,6 +76,33 @@ export const initialState: StateType = {
         description: "default value",
       }
     }, // set fake default category object to avoid null error for the 2nd arg in useEffect
+    curSort: null,
+    sortList: [
+      {
+        key:  "-createdAt", // asc
+        label: "Recent"
+      },
+      {
+        key:  "createdAt", // desc
+        label: "Old"
+      },
+      {
+        key:  "titles", // desc
+        label: "Title Asc"
+      },
+      {
+        key:  "-titles", // desc
+        label: "Title Desc"
+      },
+      {
+        key:  "averageRating", // desc
+        label: "Higher Rating"
+      },
+      {
+        key:  "-averageRating", // desc
+        label: "Lower Rating"
+      },
+    ],
   },
   domain: {
     animes: {

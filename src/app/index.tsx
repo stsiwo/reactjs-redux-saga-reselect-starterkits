@@ -5,3 +5,7 @@ export enum FetchStatusEnum {
   SUCCESS = "SUCCESS",
 }
 
+export declare type SortType = {
+  key: string
+  label: string
+}

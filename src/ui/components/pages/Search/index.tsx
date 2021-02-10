@@ -7,9 +7,10 @@ import { AnimeType } from 'domain/anime';
 import { DomainPaginationType } from 'states/types';
 import Pagination from 'components/common/Pagination';
 import { convertPageToOffset } from 'src/utils';
-import { searchKeywordActions, curCategoryActions } from 'reducers/slices/app';
+import { searchKeywordActions, curCategoryActions, curSortActions } from 'reducers/slices/app';
 import { CategoryType } from 'domain/category';
 import { fetchCategoryActionCreator } from 'reducers/slices/domain/categories';
+import { SortType } from 'src/app';
 
 const SearchBox = styled.div`
   width: 100vw;
@@ -63,6 +64,14 @@ const CategoryItem = styled.div`
   ${(props: CategoryItemPropsType) => (props.active) ? "background-color: red;" : ""}  
 `
 
+const SortBox = styled.div``
+
+declare type SortItemPropsType = {
+  active: boolean
+}
+const SortItem = styled.div`
+  ${(props: SortItemPropsType) => (props.active) ? "background-color: red;" : ""}
+`
 
 const Search: React.FunctionComponent<{}> = (props) => {
 
@@ -211,6 +220,42 @@ const Search: React.FunctionComponent<{}> = (props) => {
   }
 
   /**
+   * sort feature
+   **/
+  const curSort = useSelector(mSelector.makeCurSortSelector())
+  const sortList = useSelector(mSelector.makeSortListSelector())
+  const handleSortItemChangeEvent: React.EventHandler<React.ChangeEvent<HTMLInputElement>> = (e) => {
+
+    // get sort object by its id (e.currentTarget.value)
+    const nextSort: SortType = sortList.find((sort: SortType) => sort.key === e.currentTarget.value)
+
+    // dispatch to update it
+    dispatch(curSortActions.update(nextSort))
+
+    // cancel pagination
+    dispatch(updateAnimePaginationDataActions.clear())
+  }
+
+  const renderSortItemComponents: () => React.ReactNode = () => {
+    return sortList.map((sort: SortType) => {
+      return (
+        <SortItem active={(curSort) ? curSort.key.localeCompare(sort.key) === 0 : false}>
+          <input
+            type="radio"
+            id={sort.key}
+            value={sort.key}
+            name="sort"
+            style={{ display: "none" }}
+            onChange={handleSortItemChangeEvent}
+            checked={(curSort) ? curSort.key.localeCompare(sort.key) === 0 : false}
+          />
+          <label htmlFor={sort.key}>{sort.label}</label>
+        </SortItem>
+      )
+    })
+  }
+
+  /**
    * initial anime fetch (only once)
    *  
    **/
@@ -218,7 +263,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
     dispatch(fetchAnimeActionCreator())
   }, [
       // you don't need this (curSearchKeyword) when user change the query. 
-    // we also update this pagination.
+      // we also update this pagination.
       //curSearchKeyword, 
       curPagination.limit,
       curPagination.offset,
@@ -259,12 +304,10 @@ const Search: React.FunctionComponent<{}> = (props) => {
             </CategorySearchInnerBox>
           </CategorySearchResultBox>
         </CategoryFilterBox>
-        <div>
-          <label htmlFor="filters">Filters</label>
-          <input type="radio" value="1" name="filter" /> Opt 1
-          <input type="radio" value="2" name="filter" /> Opt 2
-          <input type="radio" value="3" name="filter" /> Opt 3
-        </div>
+        <SortBox>
+          <h3>Sort</h3>
+          {renderSortItemComponents()}
+        </SortBox>
       </SearchControllerBox>
       {/** main: search result list with pagination **/}
       <SearchResultBox>
@@ -282,10 +325,6 @@ const Search: React.FunctionComponent<{}> = (props) => {
     </SearchBox>
   )
 }
-
-
-
-
 
 export default Search
 

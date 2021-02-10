@@ -3,7 +3,7 @@ import { leftNavMenuSliceReducer, rightNavMenuSliceReducer, searchModalSliceRedu
 //import { blogDataSliceReducer } from './slices/domain/blogs';
 //import { tagDataSliceReducer } from './slices/domain/tags';
 //import { categoryDataSliceReducer } from './slices/domain/categories';
-import { searchKeywordSliceReducer, fetchStatusSliceReducer, curCategorySliceReducer, categoryFetchStatusSliceReducer } from './slices/app';
+import { searchKeywordSliceReducer, fetchStatusSliceReducer, curCategorySliceReducer, categoryFetchStatusSliceReducer, curSortSliceReducer, sortListSliceReducer } from './slices/app';
 import { updateAnimeDataSliceReducer, updateAnimePaginationDataSliceReducer, updateAnimeCurItemsDataSliceReducer } from './slices/domain/anime';
 import { categoryDataSliceReducer } from './slices/domain/categories';
 
@@ -25,6 +25,8 @@ export const rootReducer = combineReducers({
     fetchStatus: fetchStatusSliceReducer,
     categoryFetchStatus: categoryFetchStatusSliceReducer,
     curCategory: curCategorySliceReducer,
+    curSort: curSortSliceReducer,
+    sortList: sortListSliceReducer,
   }),
 
   domain: combineReducers({

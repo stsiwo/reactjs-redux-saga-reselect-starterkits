@@ -4,7 +4,7 @@ import { normalize } from "normalizr";
 import { fetchStatusActions } from "reducers/slices/app";
 import { updateAnimeCurItemsDataActions, updateAnimeDataActions, updateAnimePaginationDataActions } from "reducers/slices/domain/anime";
 import { call, put, select } from "redux-saga/effects";
-import { FetchStatusEnum } from "src/app";
+import { FetchStatusEnum, SortType } from "src/app";
 import { mSelector } from "src/selectors/selector";
 import { animeSchemaArray } from "states/state";
 import { DomainPaginationType } from "states/types";
@@ -34,6 +34,11 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
   const curCategory: CategoryType = yield select(mSelector.makeCurCategorySelector())
 
   /**
+   * get current sort for search
+   **/
+  const curSort: SortType = yield select(mSelector.makeCurSortSelector())
+
+  /**
    * update status for anime data
    **/
   yield put(
@@ -52,6 +57,9 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
     }
     if (curCategory && curCategory.id != -1) { // default category id is -1 so exclude this also
       targetUrl += `&filter[categories]=${curCategory.attributes.title}` 
+    }
+    if (curSort) {
+      targetUrl += `&sort=${curSort.key}`
     }
 
     console.log("keyword")

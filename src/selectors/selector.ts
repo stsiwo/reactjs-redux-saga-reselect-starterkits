@@ -36,6 +36,8 @@ export const rsSelector = {
     getSearchKeyword: (state: StateType) => state.app.searchKeyword,
     getFetchStatus: (state: StateType) => state.app.fetchStatus,
     getCurCategory: (state: StateType) => state.app.curCategory,
+    getCurSort: (state: StateType) => state.app.curSort,
+    getSortList: (state: StateType) => state.app.sortList,
   },
 
   domain: {
@@ -128,6 +130,30 @@ export const mSelector = {
       ],
       (curCategory) => {
         return curCategory
+      },
+    )
+  },
+
+  // app.curSort
+  makeCurSortSelector: () => {
+    return createSelector(
+      [
+        rsSelector.app.getCurSort
+      ],
+      (curSort) => {
+        return curSort
+      },
+    )
+  },
+
+  // app.sortList
+  makeSortListSelector: () => {
+    return createSelector(
+      [
+        rsSelector.app.getSortList
+      ],
+      (sortList) => {
+        return sortList
       },
     )
   },
