@@ -110,10 +110,10 @@ const Search: React.FunctionComponent<{}> = (props) => {
     dispatch(updateAnimePaginationDataActions.clear())
   }
 
-
   /**
    * category search feature
    **/
+  const categorySearchInputRef = React.useRef<HTMLInputElement>(null)
   const curCategory = useSelector(mSelector.makeCurCategorySelector())
   const [curCategorySearchKeyword, setCategorySearchKeyword] = React.useState<string>("")
   const categories = useSelector(mSelector.makeCategoryWithFilterDataSelector(curCategorySearchKeyword))
@@ -126,10 +126,30 @@ const Search: React.FunctionComponent<{}> = (props) => {
 
   //const [curCategoryId, setCurCategoryId] = React.useState<number>(-1) // put default value (-1) to avoid 'calling toSTring() of undefined'
   const handleCategorySelectionClickEvent: React.EventHandler<React.MouseEvent<HTMLDivElement>> = (e) => {
-    console.log("select option changed")
-    const nextCurCategoryId: number = parseInt(e.currentTarget.getAttribute("data-value"))
 
-    console.log(nextCurCategoryId)
+    if (categorySearchInputRef.current) {
+      const nextCurCategoryId: number = parseInt(e.currentTarget.getAttribute("data-value"))
+
+      console.log(nextCurCategoryId)
+      // search this category by id through 'categories'
+      const nextCurCategory: CategoryType = categories.find((category: CategoryType) => category.id == nextCurCategoryId)
+
+      // update category search input
+      categorySearchInputRef.current.value = nextCurCategory.attributes.title
+
+      console.log(nextCurCategory)
+
+      // update curCategory (app state)
+      dispatch(curCategoryActions.update(nextCurCategory))
+
+      // update curCategoryId (local state)
+      // setCurCategoryId(nextCurCategoryId)
+
+      // cancel pagination
+      dispatch(updateAnimePaginationDataActions.clear())
+
+      setCategorySuggestionShow(false)
+    }
 
   }
 
@@ -228,7 +248,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
         </div>
         <CategoryFilterBox>
           <CategorySearchInputBox>
-            <input type="text" placeholder="filter your category here..." onChange={handleCategorySearchChangeEvent} onKeyDown={handleArrowKeyDownEvent} />
+            <input type="text" placeholder="filter your category here..." onChange={handleCategorySearchChangeEvent} onKeyDown={handleArrowKeyDownEvent} ref={categorySearchInputRef} />
           </CategorySearchInputBox>
           <CategorySearchResultBox >
             <CategorySearchInnerBox>
