@@ -205,11 +205,14 @@ export const mSelector = {
 
         console.log("category")
         console.log(categories)
-        
-        if (!categoryKeyword) {
-          return categories
-        }
 
+        /**
+         * if empty, return empty array to prevent display all categories at initial loading
+         **/
+        if (!categoryKeyword) {
+          return []
+        }
+        
         const filteredCategories = categories
           .filter((category: CategoryType) => {
             /**
@@ -218,9 +221,11 @@ export const mSelector = {
              *
              * use String.prototype.indexOf, which returns -1 when a substring cannot be found
              *
+             * case insensitive
+             *
              **/
             if (
-              category.attributes.title.indexOf(categoryKeyword) !== -1
+              category.attributes.title.toUpperCase().indexOf(categoryKeyword.toUpperCase()) !== -1
               //|| category.attributes.description.indexOf(categoryKeyword) !== -1
             ) {
               return true

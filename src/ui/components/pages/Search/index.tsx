@@ -46,9 +46,22 @@ const CategoryFilterBox = styled.div``
 
 const CategorySearchInputBox = styled.div``
 
-const CategorySearchResultBox = styled.select``
+const CategorySearchResultBox = styled.div`
+  position: relative; // for CategoryItem styling
+`
 
-const CategoryItem = styled.option``
+const CategorySearchInnerBox = styled.div`
+  position: absolute;
+`
+
+declare type CategoryItemPropsType = {
+  active: boolean
+}
+
+const CategoryItem = styled.div`
+  background-color: #fff; 
+  ${(props: CategoryItemPropsType) => (props.active) ? "background-color: red;" : ""}  
+`
 
 
 const Search: React.FunctionComponent<{}> = (props) => {
@@ -75,13 +88,13 @@ const Search: React.FunctionComponent<{}> = (props) => {
 
     // prep next pagiantion
     const nextPagination: DomainPaginationType = {
-      limit: curPagination.limit, 
+      limit: curPagination.limit,
       offset: convertPageToOffset(curPagination.total, curPagination.limit, parseInt(e.currentTarget.value)),
       total: curPagination.total
     }
 
     // update state
-    dispatch(updateAnimePaginationDataActions.update(nextPagination)) 
+    dispatch(updateAnimePaginationDataActions.update(nextPagination))
   }
 
   /**
@@ -97,6 +110,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
     dispatch(updateAnimePaginationDataActions.clear())
   }
 
+
   /**
    * category search feature
    **/
@@ -105,40 +119,33 @@ const Search: React.FunctionComponent<{}> = (props) => {
   const categories = useSelector(mSelector.makeCategoryWithFilterDataSelector(curCategorySearchKeyword))
   const handleCategorySearchChangeEvent: React.EventHandler<React.ChangeEvent<HTMLInputElement>> = (e) => {
     // filter category items and display those on the list
+    setCategorySuggestionShow(true)
     const nextCategorySearchKeyword = e.currentTarget.value
     setCategorySearchKeyword(nextCategorySearchKeyword)
   }
 
-  const [curCategoryId, setCurCategoryId] = React.useState<number>(-1) // put default value (-1) to avoid 'calling toSTring() of undefined'
-  const handleCategorySelectChangeEvent: React.EventHandler<React.ChangeEvent<HTMLSelectElement>> = (e) => {
+  //const [curCategoryId, setCurCategoryId] = React.useState<number>(-1) // put default value (-1) to avoid 'calling toSTring() of undefined'
+  const handleCategorySelectionClickEvent: React.EventHandler<React.MouseEvent<HTMLDivElement>> = (e) => {
     console.log("select option changed")
-    const nextCurCategoryId: number = parseInt(e.currentTarget.value)
+    const nextCurCategoryId: number = parseInt(e.currentTarget.getAttribute("data-value"))
 
     console.log(nextCurCategoryId)
 
-    // search this category by id through 'categories'
-    const nextCurCategory: CategoryType = categories.find((category: CategoryType) => category.id == nextCurCategoryId)
-
-    console.log(nextCurCategory)
-
-    // update curCategory (app state)
-    dispatch(curCategoryActions.update(nextCurCategory))
-
-    // update curCategoryId (local state)
-    setCurCategoryId(nextCurCategoryId)
-    
-    // cancel pagination
-    dispatch(updateAnimePaginationDataActions.clear())
   }
 
   const renderCategoryComponents: () => React.ReactNode = () => {
-    return categories.map((category: CategoryType) => {
+    return categories.map((category: CategoryType, index: number) => {
       return (
-        <CategoryItem value={category.id}>
+        <CategoryItem
+          data-value={category.id}
+          onClick={handleCategorySelectionClickEvent}
+          active={(curSelectedCategorySuggestionItemIndex == index) ? true : false}
+        /**ref={(el: any) => categorySuggestionListRef.current[index] = el}**/
+        >
           {category.attributes.title}
         </CategoryItem>
-      ) 
-    }) 
+      )
+    })
   }
 
   // initial fetch categories (only once)
@@ -147,18 +154,54 @@ const Search: React.FunctionComponent<{}> = (props) => {
   }, [])
 
   /**
+   * auto complete feature
+   **/
+  const [isCategorySuggestionShow, setCategorySuggestionShow] = React.useState<boolean>(false)
+  const [curSelectedCategorySuggestionItemIndex, setSelectedCategorySuggestionItemIndex] = React.useState<number>(-1)
+  const handleArrowKeyDownEvent: React.EventHandler<React.KeyboardEvent<HTMLInputElement>> = (e) => {
+
+    // add boundary check of this categories array
+    if (e.key == 'ArrowDown' && curSelectedCategorySuggestionItemIndex < (categories.length - 1)) {
+      setSelectedCategorySuggestionItemIndex((prev: number) => ++prev)
+    } else if (e.key == 'ArrowUp' && curSelectedCategorySuggestionItemIndex >= 0) {
+      setSelectedCategorySuggestionItemIndex((prev: number) => --prev)
+    } else if (e.key == 'Enter') {
+      if (curSelectedCategorySuggestionItemIndex !== -1) {
+        const nextCategorySearchKeyword = categories[curSelectedCategorySuggestionItemIndex].attributes.title
+        const nextCurCategoryId = categories[curSelectedCategorySuggestionItemIndex].id
+        e.currentTarget.value = nextCategorySearchKeyword
+        setCategorySearchKeyword(nextCategorySearchKeyword)
+        // search this category by id through 'categories'
+        const nextCurCategory: CategoryType = categories.find((category: CategoryType) => category.id == nextCurCategoryId)
+
+        console.log(nextCurCategory)
+
+        // update curCategory (app state)
+        dispatch(curCategoryActions.update(nextCurCategory))
+
+        // update curCategoryId (local state)
+        // setCurCategoryId(nextCurCategoryId)
+
+        // cancel pagination
+        dispatch(updateAnimePaginationDataActions.clear())
+
+        setCategorySuggestionShow(false)
+      }
+    }
+  }
+
+  /**
    * initial anime fetch (only once)
    *  
    **/
   React.useEffect(() => {
     dispatch(fetchAnimeActionCreator())
   }, [
-    curPagination.limit,
-    curPagination.offset,
-    curPagination.total,
-    curCategory.id,
-  ])
-
+      curPagination.limit,
+      curPagination.offset,
+      curPagination.total,
+      curCategory.id,
+    ])
 
   /**
    * render anime components
@@ -181,14 +224,16 @@ const Search: React.FunctionComponent<{}> = (props) => {
       <SearchControllerBox>
         <div>
           <label htmlFor="search-keyword">Search</label>
-          <input type="text" placeholder="any keyword here..." name="search-keyword" onChange={handleSearchKeywordChangeEvent}/>
+          <input type="text" placeholder="any keyword here..." name="search-keyword" onChange={handleSearchKeywordChangeEvent} />
         </div>
         <CategoryFilterBox>
           <CategorySearchInputBox>
-            <input type="text" placeholder="filter your category here..." onChange={handleCategorySearchChangeEvent}/>
+            <input type="text" placeholder="filter your category here..." onChange={handleCategorySearchChangeEvent} onKeyDown={handleArrowKeyDownEvent} />
           </CategorySearchInputBox>
-          <CategorySearchResultBox onChange={handleCategorySelectChangeEvent} value={curCategoryId.toString()}>
-            {categories && categories.length > 0 && renderCategoryComponents()} 
+          <CategorySearchResultBox >
+            <CategorySearchInnerBox>
+              {isCategorySuggestionShow && categories && categories.length > 0 && renderCategoryComponents()}
+            </CategorySearchInnerBox>
           </CategorySearchResultBox>
         </CategoryFilterBox>
         <div>
@@ -201,10 +246,10 @@ const Search: React.FunctionComponent<{}> = (props) => {
       {/** main: search result list with pagination **/}
       <SearchResultBox>
         <ItemList>
-          {renderAnimeComponents()} 
+          {renderAnimeComponents()}
         </ItemList>
         <Pagination
-          limit={curPagination.limit} 
+          limit={curPagination.limit}
           offset={curPagination.offset}
           total={curPagination.total}
           btnNum={5}
