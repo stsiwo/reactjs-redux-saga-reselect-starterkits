@@ -100,6 +100,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
   /**
    * keyword search feature
    **/
+  //const curSearchKeyword = useSelector(mSelector.makeSearchKeywordSelector())
   const handleSearchKeywordChangeEvent: React.EventHandler<React.ChangeEvent<HTMLInputElement>> = (e) => {
 
     // update keyword
@@ -150,7 +151,6 @@ const Search: React.FunctionComponent<{}> = (props) => {
 
       setCategorySuggestionShow(false)
     }
-
   }
 
   const renderCategoryComponents: () => React.ReactNode = () => {
@@ -217,6 +217,9 @@ const Search: React.FunctionComponent<{}> = (props) => {
   React.useEffect(() => {
     dispatch(fetchAnimeActionCreator())
   }, [
+      // you don't need this (curSearchKeyword) when user change the query. 
+    // we also update this pagination.
+      //curSearchKeyword, 
       curPagination.limit,
       curPagination.offset,
       curPagination.total,
