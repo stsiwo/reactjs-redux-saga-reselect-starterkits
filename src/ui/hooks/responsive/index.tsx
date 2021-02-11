@@ -7,7 +7,7 @@ export const useResponsive = (): UseResponsiveStatusOutputType => {
     mobileS: 320,
     mobileM: 375,
     mobileL: 425,
-    tablet: 768,
+    tablet: 768, //  768 <= tablet size < 1024
     laptop: 1024,
     laptopL: 1440,
     desktop: 2560,
@@ -16,13 +16,12 @@ export const useResponsive = (): UseResponsiveStatusOutputType => {
   const [currentScreenSize, setScreenSize] = React.useState<ScreenSizeStatusType>({
     currentScreenWidth: window.innerWidth,
     currentScreenHeight: window.innerHeight,
-    isMobile: window.innerWidth <= size.mobileL,
-    isTablet: size.mobileL < window.innerWidth && window.innerWidth <= size.tablet,
-    isLaptop: size.tablet < window.innerWidth && window.innerWidth <= size.laptop,
-    isDesktop: size.laptop < window.innerWidth,
-    isLTETablet: window.innerWidth <= size.tablet,
-    isLTELaptop: window.innerWidth <= size.laptop,
-    isLTEDesktop: window.innerWidth <= size.desktop,
+    isMobile: window.innerWidth < size.tablet,
+    isTablet: size.tablet <= window.innerWidth && window.innerWidth < size.laptop,
+    isLaptop: size.laptop <= window.innerWidth && window.innerWidth < size.desktop,
+    isDesktop: size.desktop <= window.innerWidth,
+    isLTETablet: window.innerWidth < size.laptop,
+    isLTELaptop: window.innerWidth < size.desktop,
   });
 
   React.useEffect(() => {
@@ -30,13 +29,12 @@ export const useResponsive = (): UseResponsiveStatusOutputType => {
       setScreenSize({
         currentScreenWidth: window.innerWidth,
         currentScreenHeight: window.innerHeight,
-        isMobile: window.innerWidth <= size.mobileL,
-        isTablet: size.mobileL < window.innerWidth && window.innerWidth <= size.tablet,
-        isLaptop: size.tablet < window.innerWidth && window.innerWidth <= size.laptop, 
-        isDesktop: size.laptop < window.innerWidth,
-        isLTETablet: window.innerWidth <= size.tablet, 
-        isLTELaptop: window.innerWidth <= size.laptop,
-        isLTEDesktop: window.innerWidth <= size.desktop,
+        isMobile: window.innerWidth < size.tablet,
+        isTablet: size.tablet <= window.innerWidth && window.innerWidth < size.laptop,
+        isLaptop: size.laptop <= window.innerWidth && window.innerWidth < size.desktop,
+        isDesktop: size.desktop <= window.innerWidth,
+        isLTETablet: window.innerWidth < size.laptop,
+        isLTELaptop: window.innerWidth < size.desktop,
       });
     }
 

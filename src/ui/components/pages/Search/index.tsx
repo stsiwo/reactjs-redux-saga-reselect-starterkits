@@ -34,7 +34,6 @@ const SearchControllerBox = styled.div`
   width: 100vw;
   @media ${device.laptop} {
     flex: 0 0 15%;
-    background-color: yellow;
   }
 `
 
@@ -56,8 +55,8 @@ const SearchInput = styled.input`
 `
 
 const SearchResultBox = styled.div`
+  margin-top: 85px; // space for header controller
   @media ${device.laptop} {
-    background-color: aqua;
   }
 
 `
@@ -82,30 +81,39 @@ declare type AdditionalControllerBoxPropsType = {
 
 const AdditionalControllerBox = styled.div`
 
-  position: absolute;
   background-color: #000;
-  z-index: 900; // not working?
+  padding: 5px 0;
+  
+  @media ${device.lteTablet} {
+    position: absolute;
+    z-index: 900; 
+    width: 100vw;
+    text-align: center;
 
-  width: 100vw;
-  text-align: center;
+    ${(props: AdditionalControllerBoxPropsType) => {
 
+      if (props.open) {
+        return `
+          visibility: visible; 
+          transform: translateY(0%);
+        `;
+      } else {
+        return `
+          visibility: hidden;
+          transform: translateY(-100%);
+        `
+      }
+    }}
+    transition: all 0.5s ease-in-out;
+    padding: 5px 0 10px 0;
+  }
 
-  ${(props: AdditionalControllerBoxPropsType) => {
+  @media ${device.laptop} {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+  }
 
-    if (props.open) {
-      return `
-        visibility: visible; 
-        transform: translateY(0%);
-      `;
-    } else {
-      return `
-        visibility: hidden;
-        transform: translateY(-100%);
-      `
-    }
-  }}
-
-  transition: all 0.5s ease-in-out;
 `
 
 
@@ -119,7 +127,13 @@ const CategorySearchInput = styled.input`
  ${BaseInputStyle}
  text-align: center;
  font-size: 1em;
- width: 90%;
+ 
+ @media ${device.lteTablet} {
+  width: 90%;
+ }
+
+ @media ${device.laptop} {
+ }
 `
 
 const CategorySearchResultBox = styled.div`
@@ -133,6 +147,13 @@ const CategorySearchInnerBox = styled.div`
   width: 100%;
   background-color: #000;
 `
+const CategoryFilterTile = styled.h3`
+  @media ${device.laptop} {
+    display: inline;
+    margin: 0 8px 0 0;
+  }
+`
+
 
 declare type CategoryItemPropsType = {
   active: boolean
@@ -145,24 +166,55 @@ const CategoryItem = styled.div`
 
 const SortBox = styled.div`
   color: #fff;
-  margin-bottom: 20px;
 `
+
+const SortItemList = styled.div`
+  @media ${device.mobileL} {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(2, 1fr); 
+  }
+
+  @media ${device.laptop} {
+    display: inline-flex;
+  }
+`
+
 
 declare type SortItemPropsType = {
   active: boolean
 }
 const SortItem = styled.div`
-  background-color:${(props: SortItemPropsType) => (props.active) ?  "#fff" : "#000"};
-  color:${(props: SortItemPropsType) => (props.active) ?  "#000" : "#fff"};
+  background-color:${(props: SortItemPropsType) => (props.active) ? "#fff" : "#000"};
+  color:${(props: SortItemPropsType) => (props.active) ? "#000" : "#fff"};
   padding: 5px;
   border: 1px solid #fff;
   width: 90%;
   margin: 0 auto;
   border-radius: 7px;
+
+  @media ${device.mobileL} {
+    width: 95%; 
+  }
+
+  @media ${device.laptop} {
+    margin: 0 3px;
+    border-radius: 0;
+  }
 `
+
+const SortTitle = styled.h3`
+  @media ${device.laptop} {
+    display: inline;
+    margin: 0 8px 0 0;
+  }
+`
+
 const SortLabel = styled.label`
   display: block;
   width: 100%;
+  white-space: nowrap;
+  padding: 0 5px;
 `
 
 const Search: React.FunctionComponent<{}> = (props) => {
@@ -429,7 +481,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
         <AdditionalControllerBox open={isAdditionalControllerOpen}>
           <CategoryFilterBox >
             <CategorySearchInputBox>
-              <h3>Category</h3>
+              <CategoryFilterTile>Category</CategoryFilterTile>
               <CategorySearchInput type="text" placeholder="search by category..." onChange={handleCategorySearchChangeEvent} onKeyDown={handleArrowKeyDownEvent} ref={categorySearchInputRef} />
               <CategorySearchResultBox >
                 <CategorySearchInnerBox>
@@ -439,8 +491,10 @@ const Search: React.FunctionComponent<{}> = (props) => {
             </CategorySearchInputBox>
           </CategoryFilterBox>
           <SortBox>
-            <h3>Sort</h3>
-            {renderSortItemComponents()}
+            <SortTitle>Sort</SortTitle>
+            <SortItemList>
+              {renderSortItemComponents()}
+            </SortItemList>
           </SortBox>
         </AdditionalControllerBox>
       </SearchControllerBox>
