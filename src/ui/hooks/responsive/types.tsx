@@ -1,7 +1,7 @@
 export declare type ScreenSizeStatusType = {
   currentScreenWidth: number   
   currentScreenHeight: number  
-  isMobileL: boolean           
+  isMobile: boolean           
   isTablet: boolean            
   isLaptop: boolean            
   isDesktop: boolean           
@@ -19,7 +19,7 @@ export declare type UseResponsiveStatusInputType = {
 export declare type UseResponsiveStatusOutputType = {
   currentScreenWidth: number   
   currentScreenHeight: number  
-  isMobileL: boolean           
+  isMobile: boolean           
   isTablet: boolean        
   isLaptop: boolean        
   isDesktop: boolean       
