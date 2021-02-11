@@ -56,22 +56,33 @@ const SearchInput = styled.input`
 
 const SearchResultBox = styled.div`
   margin-top: 85px; // space for header controller
+  background-color: #000;
   @media ${device.laptop} {
   }
 
 `
 
-const Anime = styled.div`
-
-  flex: 0 0 200px;
-  cursor: pointer;
-`
 const ItemList = styled.div`
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
+  overflow: scroll;
+  white-space: nowrap;
+  width: 100vw;
+  
+  
+`
+
+const Anime = styled.div`
+
+  display: inline-block;
+  cursor: pointer;
+
+  margin: 10px 30px;
+  box-shadow: 0px 0px 42px 0px grey;
+
+`
+
+const AnimeImage = styled.img`
+  width: 100%;
 `
 
 declare type AdditionalControllerBoxPropsType = {
@@ -92,18 +103,18 @@ const AdditionalControllerBox = styled.div`
 
     ${(props: AdditionalControllerBoxPropsType) => {
 
-      if (props.open) {
-        return `
+    if (props.open) {
+      return `
           visibility: visible; 
           transform: translateY(0%);
         `;
-      } else {
-        return `
+    } else {
+      return `
           visibility: hidden;
           transform: translateY(-100%);
         `
-      }
-    }}
+    }
+  }}
     transition: all 0.5s ease-in-out;
     padding: 5px 0 10px 0;
   }
@@ -454,6 +465,34 @@ const Search: React.FunctionComponent<{}> = (props) => {
   }
 
   /**
+   * anime list item horizontal scroll
+   **/
+  // laptop & desktop: we need to use onWheel
+  const handleHorizontalWheelEvent: React.EventHandler<React.WheelEvent<HTMLDivElement>> = (e) => {
+    // deltaY is used to determine wheel is up or down 
+    // return "+" value when scroll down
+    // return "-" value when scroll up 
+    if (e.deltaY > 0) {
+      // scroll down
+      e.currentTarget.scrollBy({
+        behavior: "smooth",
+        left: 100,
+      })
+    } else {
+      // scroll up
+      e.currentTarget.scrollBy({
+        behavior: "smooth",
+        left: -100,
+      })
+    }
+
+  }
+
+  const handleHorizontalScrollEvent: React.EventHandler<React.UIEvent<HTMLDivElement>> = (e) => {
+    console.log("scrolled")
+  }
+
+  /**
    * render anime components
    *
    **/
@@ -461,8 +500,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
     return curAnimes.map((anime: AnimeType) => {
       return (
         <Anime key={anime.id} data-anime-id={anime.id} onClick={handleAnimeClickEvent}>
-          <h2>{anime.attributes.titles.en}</h2>
-          <img src={anime.attributes.posterImage.tiny} alt={`${anime.attributes.titles.en} post image`} />
+          <AnimeImage src={anime.attributes.posterImage.medium} alt={`${anime.attributes.titles.en} post image`} />
         </Anime>
       )
     })
@@ -500,7 +538,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
       </SearchControllerBox>
       {/** main: search result list with pagination **/}
       <SearchResultBox>
-        <ItemList>
+        <ItemList onScroll={handleHorizontalScrollEvent} onWheel={handleHorizontalWheelEvent}>
           {renderAnimeComponents()}
         </ItemList>
         <Pagination
