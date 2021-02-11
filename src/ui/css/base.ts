@@ -30,9 +30,10 @@ export const device = {
 export const BaseInputStyle = css`
   border: none;
   border-bottom: 1px solid #fff;
-  margin: 3px; 
+  margin: 3px 5px; 
   padding: 3px;
   background-color: transparent;
   color: #fff;
+
 `
 

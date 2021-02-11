@@ -25,4 +25,5 @@ export default styled(SortI)`
   width: ${(props: IconProps) => props.width ? `${props.width}px;` : "25px;"}  
   height: ${(props: IconProps) => props.height ? `${props.height}px;` : "25px;"}  
   color: ${(props: IconProps) => props.color ? `${props.color};` : "#000;"}
+  margin: 5px;
 `

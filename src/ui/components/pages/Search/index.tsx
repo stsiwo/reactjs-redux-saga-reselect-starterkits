@@ -40,11 +40,15 @@ const SearchControllerBox = styled.div`
 
 const SearchInputBox = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   z-index: 1000; 
   position: relative; // need this to make z-index work;
   background-color: #000; // need this to make z-index work;
+
+  padding: 5px;
+
+  height: 50px;
 `
 
 const SearchInput = styled.input`
@@ -59,8 +63,6 @@ const SearchResultBox = styled.div`
 `
 
 const Anime = styled.div`
-  width: 500px;
-  height: 400px;
 
   flex: 0 0 200px;
   cursor: pointer;
@@ -74,7 +76,7 @@ const ItemList = styled.div`
 `
 
 declare type AdditionalControllerBoxPropsType = {
-  open: boolean   
+  open: boolean
 }
 
 
@@ -89,7 +91,7 @@ const AdditionalControllerBox = styled.div`
 
 
   ${(props: AdditionalControllerBoxPropsType) => {
-    
+
     if (props.open) {
       return `
         visibility: visible; 
@@ -103,25 +105,33 @@ const AdditionalControllerBox = styled.div`
     }
   }}
 
-  transition: all 0.5s;
+  transition: all 0.5s ease-in-out;
 `
 
 
 const CategoryFilterBox = styled.div``
 
 const CategorySearchInputBox = styled.div`
+  color: #fff;
 `
 
 const CategorySearchInput = styled.input`
  ${BaseInputStyle}
+ text-align: center;
+ font-size: 1em;
+ width: 90%;
 `
 
 const CategorySearchResultBox = styled.div`
   position: relative; // for CategoryItem styling
+  width: 90%;
+  margin: 0 auto;
 `
 
 const CategorySearchInnerBox = styled.div`
   position: absolute;
+  width: 100%;
+  background-color: #000;
 `
 
 declare type CategoryItemPropsType = {
@@ -129,19 +139,30 @@ declare type CategoryItemPropsType = {
 }
 
 const CategoryItem = styled.div`
-  background-color: #fff; 
-  ${(props: CategoryItemPropsType) => (props.active) ? "background-color: red;" : ""}  
+  ${(props: CategoryItemPropsType) => (props.active) ? "background-color: #fff;" : "#000"}  
+  ${(props: CategoryItemPropsType) => (props.active) ? "color: #000;" : "#fff"}  
 `
 
 const SortBox = styled.div`
   color: #fff;
+  margin-bottom: 20px;
 `
 
 declare type SortItemPropsType = {
   active: boolean
 }
 const SortItem = styled.div`
-  ${(props: SortItemPropsType) => (props.active) ? "background-color: red;" : ""}
+  background-color:${(props: SortItemPropsType) => (props.active) ?  "#fff" : "#000"};
+  color:${(props: SortItemPropsType) => (props.active) ?  "#000" : "#fff"};
+  padding: 5px;
+  border: 1px solid #fff;
+  width: 90%;
+  margin: 0 auto;
+  border-radius: 7px;
+`
+const SortLabel = styled.label`
+  display: block;
+  width: 100%;
 `
 
 const Search: React.FunctionComponent<{}> = (props) => {
@@ -324,7 +345,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
             onChange={handleSortItemChangeEvent}
             checked={(curSort) ? curSort.key.localeCompare(sort.key) === 0 : false}
           />
-          <label htmlFor={sort.key}>{sort.label}</label>
+          <SortLabel htmlFor={sort.key}>{sort.label}</SortLabel>
         </SortItem>
       )
     })
@@ -402,19 +423,20 @@ const Search: React.FunctionComponent<{}> = (props) => {
         <SearchInputBox>
           <SearchInput type="text" placeholder="search any anime..." name="search-keyword" onChange={handleSearchKeywordChangeEvent} />
           {(responsive.isLTETablet &&
-            <SortI color={"#fff"} onClick={handleAdditionalControllerOpenIconClick}/>
+            <SortI color={"#fff"} onClick={handleAdditionalControllerOpenIconClick} />
           )}
         </SearchInputBox>
         <AdditionalControllerBox open={isAdditionalControllerOpen}>
           <CategoryFilterBox >
             <CategorySearchInputBox>
+              <h3>Category</h3>
               <CategorySearchInput type="text" placeholder="search by category..." onChange={handleCategorySearchChangeEvent} onKeyDown={handleArrowKeyDownEvent} ref={categorySearchInputRef} />
+              <CategorySearchResultBox >
+                <CategorySearchInnerBox>
+                  {isCategorySuggestionShow && categories && categories.length > 0 && renderCategoryComponents()}
+                </CategorySearchInnerBox>
+              </CategorySearchResultBox>
             </CategorySearchInputBox>
-            <CategorySearchResultBox >
-              <CategorySearchInnerBox>
-                {isCategorySuggestionShow && categories && categories.length > 0 && renderCategoryComponents()}
-              </CategorySearchInnerBox>
-            </CategorySearchResultBox>
           </CategoryFilterBox>
           <SortBox>
             <h3>Sort</h3>
