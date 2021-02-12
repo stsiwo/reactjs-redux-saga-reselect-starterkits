@@ -83,27 +83,6 @@ const ItemList = styled.div`
   }
 `
 
-const Anime = styled.div`
-
-  // inline-flex: make the container inline, which means that the next element comes next horizontally. (not jump to next line)
-  // flex: make the container block, which means that the next element comes next vertically.
-
-  display: inline-block; //(image-vertical-align)
-  cursor: pointer;
-  margin: 10px 30px;
-  height: 90%; //(image-vertical-align)
-
-  position: relative;
-
-`
-
-// need this to center image vertically (image-vertical-align)
-const AnimeImageHelper = styled.span`
-  display: inline-block; //(image-vertical-align)
-  height: 100%; //(image-vertical-align)
-  vertical-align: middle; //(image-vertical-align)
-`
-
 const AnimeImage = styled.img`
   vertical-align: middle; //(image-vertical-align)
   max-height: 100%;
@@ -111,6 +90,11 @@ const AnimeImage = styled.img`
 `
 
 const AnimeDetailBox = styled.div`
+
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.5s;
+
   position: absolute; 
   top: 0;
   left: 0;
@@ -124,6 +108,8 @@ const AnimeDetailBox = styled.div`
   word-break: break-all;
   white-space: normal;
   font-weight: bold;
+
+  
 `
 
 const AnimeTitle = styled.h2`
@@ -140,6 +126,34 @@ const AnimeTrailerLink = styled.a`
 
 const AnimeDescription = styled.p`
 `
+
+// need this to center image vertically (image-vertical-align)
+const AnimeImageHelper = styled.span`
+  display: inline-block; //(image-vertical-align)
+  height: 100%; //(image-vertical-align)
+  vertical-align: middle; //(image-vertical-align)
+
+`
+const Anime = styled.div`
+
+  // inline-flex: make the container inline, which means that the next element comes next horizontally. (not jump to next line)
+  // flex: make the container block, which means that the next element comes next vertically.
+
+  display: inline-block; //(image-vertical-align)
+  cursor: pointer;
+  margin: 10px 30px;
+  height: 90%; //(image-vertical-align)
+
+  position: relative;
+
+  &:hover > ${AnimeDetailBox} {
+    opacity: 1;
+    visibility: visible;
+  }
+
+`
+
+
 
 declare type AdditionalControllerBoxPropsType = {
   open: boolean
