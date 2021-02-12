@@ -9,7 +9,6 @@ const PaginationBox = styled.div`
   width: 100vw;
   position: fixed;
   bottom: 0;
-  background-color: #000;
   padding: 5px;
 
   @media ${device.laptop} {
@@ -51,8 +50,8 @@ const PaginationBtn = styled.button`
   ${(props: PaginationBtnPropsType) => {
     if (props.active) {
       return `
-        background-color: #000;
-        color: #fff;
+        background-color: #fff;
+        color: #000;
       `
     }
   }}

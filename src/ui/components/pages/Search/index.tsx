@@ -20,8 +20,9 @@ const SearchBox = styled.div`
   width: 100vw;
   height: 100vh;
 
+  background-color: #000;
+
   @media ${device.laptop} {
-    display: flex;
   }
 
 `
@@ -55,8 +56,11 @@ const SearchInput = styled.input`
 `
 
 const SearchResultBox = styled.div`
-  margin-top: 85px; // space for header controller
-  background-color: #000;
+
+  padding-top: 85px; // space for header controller
+
+  height: 100%;
+
   @media ${device.laptop} {
   }
 
@@ -67,22 +71,41 @@ const ItemList = styled.div`
   overflow: scroll;
   white-space: nowrap;
   width: 100vw;
-  
-  
+  height: 100%;
+
+  /* hide scroll (horizontal) bar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+
+  &::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+  }
 `
 
 const Anime = styled.div`
 
-  display: inline-block;
-  cursor: pointer;
+  // inline-flex: make the container inline, which means that the next element comes next horizontally. (not jump to next line)
+  // flex: make the container block, which means that the next element comes next vertically.
 
+  display: inline-block; //(image-vertical-align)
+  cursor: pointer;
   margin: 10px 30px;
-  box-shadow: 0px 0px 42px 0px grey;
+  height: 90%; //(image-vertical-align)
 
 `
 
+// need this to center image vertically (image-vertical-align)
+const AnimeImageHelper = styled.span`
+  display: inline-block; //(image-vertical-align)
+  height: 100%; //(image-vertical-align)
+  vertical-align: middle; //(image-vertical-align)
+`
+
 const AnimeImage = styled.img`
-  width: 100%;
+  vertical-align: middle; //(image-vertical-align)
+  max-height: 100%;
+  max-width: auto;
 `
 
 declare type AdditionalControllerBoxPropsType = {
@@ -500,7 +523,16 @@ const Search: React.FunctionComponent<{}> = (props) => {
     return curAnimes.map((anime: AnimeType) => {
       return (
         <Anime key={anime.id} data-anime-id={anime.id} onClick={handleAnimeClickEvent}>
-          <AnimeImage src={anime.attributes.posterImage.medium} alt={`${anime.attributes.titles.en} post image`} />
+          <AnimeImageHelper />
+          {(responsive.isMobile &&
+            <AnimeImage src={anime.attributes.posterImage.small} alt={`${anime.attributes.titles.en} post image`} />
+          )}
+          {(responsive.isTablet &&
+            <AnimeImage src={anime.attributes.posterImage.medium} alt={`${anime.attributes.titles.en} post image`} />
+          )}
+          {(responsive.isLaptop &&
+            <AnimeImage src={anime.attributes.posterImage.large} alt={`${anime.attributes.titles.en} post image`} />
+          )}
         </Anime>
       )
     })
@@ -537,18 +569,18 @@ const Search: React.FunctionComponent<{}> = (props) => {
         </AdditionalControllerBox>
       </SearchControllerBox>
       {/** main: search result list with pagination **/}
-      <SearchResultBox>
+      <SearchResultBox >
         <ItemList onScroll={handleHorizontalScrollEvent} onWheel={handleHorizontalWheelEvent}>
           {renderAnimeComponents()}
         </ItemList>
-        <Pagination
-          limit={curPagination.limit}
-          offset={curPagination.offset}
-          total={curPagination.total}
-          btnNum={5}
-          onClick={handlePaginationClickEvent}
-        />
       </SearchResultBox>
+      <Pagination
+        limit={curPagination.limit}
+        offset={curPagination.offset}
+        total={curPagination.total}
+        btnNum={5}
+        onClick={handlePaginationClickEvent}
+      />
       <AnimeDetailModal
         isOpen={isAnimeDetailModalOpen}
         anime={curSelectedAnime}
