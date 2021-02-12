@@ -39,6 +39,14 @@ export const BaseInputStyle = css`
   padding: 3px;
   background-color: transparent;
   color: #fff;
+`
+
+export const BaseInputBtnStyle = css`
+  border: 1px solid #fff;
+  background-color: transparent;
+  padding: 3px;
+  color: #fff;
+  margin: 3px 5px;
 
 `
 

@@ -12,7 +12,7 @@ import { convertPageToOffset, toStringToDateToString } from 'src/utils';
 import { DomainPaginationType } from 'states/types';
 import styled from 'styled-components';
 import AnimeDetailModal from 'components/common/AnimeDetailModal';
-import { device, BaseInputStyle } from 'ui/css/base';
+import { device, BaseInputStyle, BaseInputBtnStyle } from 'ui/css/base';
 import { useResponsive } from 'hooks/responsive';
 import SortI from 'components/common/icons/SortI';
 
@@ -89,18 +89,16 @@ const AnimeImage = styled.img`
   max-width: auto;
 `
 
+declare type AnimeDetailBoxPropsType = {
+  open?: boolean;
+}
 const AnimeDetailBox = styled.div`
 
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.5s;
-
-  position: absolute; 
+  background-color: rgba(0, 0, 0, 0.7);
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
   color: #fff;
   text-align: center;
   padding: 10px;
@@ -108,6 +106,32 @@ const AnimeDetailBox = styled.div`
   word-break: break-all;
   white-space: normal;
   font-weight: bold;
+  transition: all 0.5s;
+
+  @media ${device.lteTablet} {
+    position: fixed;
+
+    ${(props: AnimeDetailBoxPropsType) => {
+    if (props.open) {
+      return `
+          opacity: 1;
+          visibility: visible;
+        `
+    } else {
+      return `
+          opacity: 0;
+          visibility: hidden;
+        `
+    }
+  }}
+  }
+
+  @media ${device.laptop} {
+    opacity: 0;
+    visibility: hidden;
+
+    position: absolute; 
+  }
 
   
 `
@@ -122,9 +146,32 @@ const AnimeAverageRating = styled.p``
 const AnimeTrailerLink = styled.a`
   text-decoration: none;
   color: #fff;
+  border: 1px solid #fff;
+  padding: 7px;
+  box-shadow: 0px 1px 3px 0px #fff;
 `
 
 const AnimeDescription = styled.p`
+  font-weight: normal;
+`
+
+const AnimeDetailControllerBox = styled.div`
+  
+  @media ${device.lteTablet} {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+`
+
+const AnimeDetailCloseBtn = styled.input`
+  ${BaseInputBtnStyle}
+  font-weight: bold;
+  font-size: 1em;
+
+  border: 1px solid #fff;
+  padding: 7px;
+  box-shadow: 0px 1px 3px 0px #fff;
 `
 
 // need this to center image vertically (image-vertical-align)
@@ -140,11 +187,9 @@ const Anime = styled.div`
   // flex: make the container block, which means that the next element comes next vertically.
 
   display: inline-block; //(image-vertical-align)
-  cursor: pointer;
   margin: 10px 30px;
   height: 90%; //(image-vertical-align)
 
-  position: relative;
 
   &:hover > ${AnimeDetailBox} {
     opacity: 1;
@@ -501,7 +546,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
     ])
 
   /**
-   * detail modal feature
+   * (mobile & table) detail modal feature
    *  - display this detail modal when user click an anime item
    **/
   const [isAnimeDetailModalOpen, setAnimeDetailModalOpen] = React.useState<boolean>(false)
@@ -517,10 +562,13 @@ const Search: React.FunctionComponent<{}> = (props) => {
 
     // open the modal
     setAnimeDetailModalOpen(true)
-
   }
 
   const handleAnimeDetailCloseClick: React.EventHandler<React.MouseEvent<SVGElement>> = (e) => {
+    setAnimeDetailModalOpen(false)
+  }
+
+  const handleAnimeDetailBoxCloseEvent: React.EventHandler<React.MouseEvent<HTMLInputElement>> = (e) => {
     setAnimeDetailModalOpen(false)
   }
 
@@ -572,7 +620,9 @@ const Search: React.FunctionComponent<{}> = (props) => {
         <Anime key={anime.id} data-anime-id={anime.id} onClick={handleAnimeClickEvent}>
           <AnimeImageHelper />
           {(responsive.isMobile &&
-            <AnimeImage src={anime.attributes.posterImage.small} alt={`${anime.attributes.titles.en} post image`} />
+            <React.Fragment>
+              <AnimeImage src={anime.attributes.posterImage.small} alt={`${anime.attributes.titles.en} post image`} />
+            </React.Fragment>
           )}
           {(responsive.isTablet &&
             <AnimeImage src={anime.attributes.posterImage.medium} alt={`${anime.attributes.titles.en} post image`} />
@@ -585,18 +635,17 @@ const Search: React.FunctionComponent<{}> = (props) => {
                   {anime.attributes.canonicalTitle}
                 </AnimeTitle>
                 <AnimeReleased>
-                  Release Date: {toStringToDateToString(anime.attributes.startDate)} 
+                  Release Date: {toStringToDateToString(anime.attributes.startDate)}
                 </AnimeReleased>
                 <AnimeAverageRating>
                   Average Rating: {anime.attributes.averageRating}
                 </AnimeAverageRating>
-                <AnimeTrailerLink href={`https://youtu.be/${anime.attributes.youtubeVideoId}`} target="_blank">
-                  Watch The Trailer
-                </AnimeTrailerLink>
-                  
                 <AnimeDescription>
                   {anime.attributes.description}
                 </AnimeDescription>
+                <AnimeTrailerLink href={`https://youtu.be/${anime.attributes.youtubeVideoId}`} target="_blank">
+                  Watch The Trailer
+                </AnimeTrailerLink>
               </AnimeDetailBox>
             </React.Fragment>
           )}
@@ -648,11 +697,35 @@ const Search: React.FunctionComponent<{}> = (props) => {
         btnNum={5}
         onClick={handlePaginationClickEvent}
       />
+      {(curSelectedAnime && responsive.isLTETablet &&
+      <AnimeDetailBox open={isAnimeDetailModalOpen}>
+        <AnimeTitle>
+          {curSelectedAnime.attributes.canonicalTitle}
+        </AnimeTitle>
+        <AnimeReleased>
+          Release Date: {toStringToDateToString(curSelectedAnime.attributes.startDate)}
+        </AnimeReleased>
+        <AnimeAverageRating>
+          Average Rating: {curSelectedAnime.attributes.averageRating}
+        </AnimeAverageRating>
+        <AnimeDetailControllerBox>
+          <AnimeTrailerLink href={`https://youtu.be/${curSelectedAnime.attributes.youtubeVideoId}`} target="_blank">
+            Watch The Trailer
+                  </AnimeTrailerLink>
+          <AnimeDetailCloseBtn type="button" value="Close" onClick={handleAnimeDetailBoxCloseEvent}/>
+        </AnimeDetailControllerBox>
+        <AnimeDescription>
+          {curSelectedAnime.attributes.description}
+        </AnimeDescription>
+      </AnimeDetailBox>
+      )}
+      {/**
       <AnimeDetailModal
         isOpen={isAnimeDetailModalOpen}
         anime={curSelectedAnime}
         onCloseClick={handleAnimeDetailCloseClick}
       />
+      **/}
     </SearchBox>
   )
 }
