@@ -86,6 +86,10 @@ export function generateQueryString(target: { [key: string]: any }): string {
   return queryString
 }
 
+export function toStringToDateToString(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString("en-US", dateFormatOption)
+}
+
 export function toDateString(date: Date): string {
   return date.toLocaleDateString("en-US", dateFormatOption)
 }

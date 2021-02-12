@@ -8,7 +8,7 @@ import { fetchAnimeActionCreator, updateAnimePaginationDataActions } from 'reduc
 import { fetchCategoryActionCreator } from 'reducers/slices/domain/categories';
 import { SortType } from 'src/app';
 import { mSelector } from 'src/selectors/selector';
-import { convertPageToOffset } from 'src/utils';
+import { convertPageToOffset, toStringToDateToString } from 'src/utils';
 import { DomainPaginationType } from 'states/types';
 import styled from 'styled-components';
 import AnimeDetailModal from 'components/common/AnimeDetailModal';
@@ -93,6 +93,8 @@ const Anime = styled.div`
   margin: 10px 30px;
   height: 90%; //(image-vertical-align)
 
+  position: relative;
+
 `
 
 // need this to center image vertically (image-vertical-align)
@@ -106,6 +108,37 @@ const AnimeImage = styled.img`
   vertical-align: middle; //(image-vertical-align)
   max-height: 100%;
   max-width: auto;
+`
+
+const AnimeDetailBox = styled.div`
+  position: absolute; 
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+
+  word-break: break-all;
+  white-space: normal;
+  font-weight: bold;
+`
+
+const AnimeTitle = styled.h2`
+  
+`
+const AnimeReleased = styled.p``
+
+const AnimeAverageRating = styled.p``
+
+const AnimeTrailerLink = styled.a`
+  text-decoration: none;
+  color: #fff;
+`
+
+const AnimeDescription = styled.p`
 `
 
 declare type AdditionalControllerBoxPropsType = {
@@ -499,18 +532,18 @@ const Search: React.FunctionComponent<{}> = (props) => {
       // scroll down
       e.currentTarget.scrollBy({
         behavior: "smooth",
-        left: 100,
+        left: 200,
       })
     } else {
       // scroll up
       e.currentTarget.scrollBy({
         behavior: "smooth",
-        left: -100,
+        left: -200,
       })
     }
-
   }
 
+  // mobile & tablet swipe
   const handleHorizontalScrollEvent: React.EventHandler<React.UIEvent<HTMLDivElement>> = (e) => {
     console.log("scrolled")
   }
@@ -531,7 +564,27 @@ const Search: React.FunctionComponent<{}> = (props) => {
             <AnimeImage src={anime.attributes.posterImage.medium} alt={`${anime.attributes.titles.en} post image`} />
           )}
           {(responsive.isLaptop &&
-            <AnimeImage src={anime.attributes.posterImage.large} alt={`${anime.attributes.titles.en} post image`} />
+            <React.Fragment>
+              <AnimeImage src={anime.attributes.posterImage.large} alt={`${anime.attributes.titles.en} post image`} />
+              <AnimeDetailBox>
+                <AnimeTitle>
+                  {anime.attributes.canonicalTitle}
+                </AnimeTitle>
+                <AnimeReleased>
+                  Release Date: {toStringToDateToString(anime.attributes.startDate)} 
+                </AnimeReleased>
+                <AnimeAverageRating>
+                  Average Rating: {anime.attributes.averageRating}
+                </AnimeAverageRating>
+                <AnimeTrailerLink href={`https://youtu.be/${anime.attributes.youtubeVideoId}`} target="_blank">
+                  Watch The Trailer
+                </AnimeTrailerLink>
+                  
+                <AnimeDescription>
+                  {anime.attributes.description}
+                </AnimeDescription>
+              </AnimeDetailBox>
+            </React.Fragment>
           )}
         </Anime>
       )
