@@ -1,6 +1,15 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAction } from "@reduxjs/toolkit";
 import { FetchStatusEnum, SortType } from "src/app";
 import { CategoryType } from "domain/category";
+
+/**
+ * common reducer action type
+ *   - call multiple reducers on different properties
+ **/
+
+// cancel all sort & filter
+export const clearAllSortAndFilterActionCreator = createAction("/app/common/clearAllSortAndFilter")
+export const clearAllSortAndFilterActionTypeName = clearAllSortAndFilterActionCreator().type
 
 /**
  * app.searchKeyword state Slice
@@ -23,12 +32,18 @@ export const searchKeywordSlice = createSlice({
     update: (state: string, action: searchKeywordUpdateActionType) => action.payload,
     clear: (state: string) => "",
 
-  }
+  },
   /**
    * extraReducers property
    *
    * You can respond to other action types besides the types it has generated.
    **/
+  extraReducers: (builder) => {
+    builder.addCase(
+      clearAllSortAndFilterActionCreator,
+      (state: string) => ""
+    )
+  }
 })
 
 export const searchKeywordSliceReducer = searchKeywordSlice.reducer
@@ -117,13 +132,26 @@ export const curCategorySlice = createSlice({
      *
      **/
     update: (state: CategoryType, action: curCategoryUpdateActionType) => action.payload,
-    clear: (state: CategoryType) => null
-  }
+  },
   /**
    * extraReducers property
    *
    * You can respond to other action types besides the types it has generated.
    **/
+  extraReducers: (builder) => {
+    builder.addCase(
+      clearAllSortAndFilterActionCreator,
+      (state: CategoryType) => {
+        return {
+          id: -1,
+          attributes: {
+            title: "",
+            description: "",
+          }
+        } // set fake default category object to avoid null error for the 2nd arg in useEffect
+      }
+    )
+  }
 })
 
 export const curCategorySliceReducer = curCategorySlice.reducer
@@ -148,13 +176,19 @@ export const curSortSlice = createSlice({
      *
      **/
     update: (state: SortType, action: curSortUpdateActionType) => action.payload,
-    clear: (state: SortType) => null 
-  }
+    clear: (state: SortType) => null
+  },
   /**
    * extraReducers property
    *
    * You can respond to other action types besides the types it has generated.
    **/
+  extraReducers: (builder) => {
+    builder.addCase(
+      clearAllSortAndFilterActionCreator,
+      (state: SortType) => null
+    )
+  }
 })
 
 export const curSortSliceReducer = curSortSlice.reducer

@@ -2,6 +2,7 @@ import { PayloadAction, createSlice, createAction } from "@reduxjs/toolkit";
 import { NormalizedAnimeType } from "domain/anime";
 import { merge } from "lodash";
 import { DomainStateSubType, DomainPaginationType } from "states/types";
+import { clearAllSortAndFilterActionCreator } from "../app";
 
 
 /**
@@ -78,11 +79,16 @@ export const updateAnimePaginationDataSlice = createSlice({
       total: 0,
     })
   },
-  /**
-   * extraReducers property
-   *
-   * You can respond to other action types besides the types it has generated.                                  
-   **/
+  extraReducers: (builder) => {
+    builder.addCase(
+      clearAllSortAndFilterActionCreator,
+      (state: DomainPaginationType) => ({
+      limit: 10,
+      offset: 0,
+      total: 0,
+    })
+    )
+  }
 })
 
 export const updateAnimePaginationDataSliceReducer = updateAnimePaginationDataSlice.reducer

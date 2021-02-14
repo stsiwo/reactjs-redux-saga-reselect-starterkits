@@ -10,6 +10,7 @@ import { animeSchemaArray } from "states/state";
 import isEmpty from 'lodash'
 import { AnimeType } from "domain/anime";
 import { CategoryType } from "domain/category";
+import { FetchStatusEnum } from "src/app";
 
 export const rsSelector = {
   /**

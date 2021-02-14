@@ -1,20 +1,21 @@
+import SortI from 'components/common/icons/SortI';
 import Pagination from 'components/common/Pagination';
+import Loading from 'components/common/Loading';
 import { AnimeType } from 'domain/anime';
 import { CategoryType } from 'domain/category';
+import { useOutsideClick } from 'hooks/outsideClick';
+import { useResponsive } from 'hooks/responsive';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { curCategoryActions, curSortActions, searchKeywordActions } from 'reducers/slices/app';
+import { curCategoryActions, curSortActions, searchKeywordActions, clearAllSortAndFilterActionCreator } from 'reducers/slices/app';
 import { fetchAnimeActionCreator, updateAnimePaginationDataActions } from 'reducers/slices/domain/anime';
 import { fetchCategoryActionCreator } from 'reducers/slices/domain/categories';
-import { SortType } from 'src/app';
+import { FetchStatusEnum, SortType } from 'src/app';
 import { mSelector } from 'src/selectors/selector';
 import { convertPageToOffset, toStringToDateToString } from 'src/utils';
 import { DomainPaginationType } from 'states/types';
 import styled from 'styled-components';
-import AnimeDetailModal from 'components/common/AnimeDetailModal';
-import { device, BaseInputStyle, BaseInputBtnStyle } from 'ui/css/base';
-import { useResponsive } from 'hooks/responsive';
-import SortI from 'components/common/icons/SortI';
+import { BaseInputBtnStyle, BaseInputStyle, device } from 'ui/css/base';
 
 const SearchBox = styled.div`
   width: 100vw;
@@ -67,6 +68,27 @@ const SearchResultBox = styled.div`
 
 `
 
+const NoResultBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const NoResultMessage = styled.p`
+  color: #fff;
+`
+
+const ClearAllSortAndFilterBtn = styled.input`
+  ${BaseInputBtnStyle}
+  font-weight: bold;
+  font-size: 1em;
+
+  border: 1px solid #fff;
+  padding: 7px;
+  box-shadow: 0px 1px 3px 0px #fff;
+  margin: 30px 5px;
+`
+
 const ItemList = styled.div`
 
   overflow: scroll;
@@ -112,6 +134,7 @@ const AnimeDetailBox = styled.div`
 
   @media ${device.lteTablet} {
     position: fixed;
+    z-index: 2000; 
 
     ${(props: AnimeDetailBoxPropsType) => {
     if (props.open) {
@@ -246,6 +269,17 @@ const AdditionalControllerBox = styled.div`
     justify-content: space-around;
   }
 
+`
+
+const AdditionalControllerCloseBtn = styled.input`
+  ${BaseInputBtnStyle}
+  font-weight: bold;
+  font-size: 1em;
+
+  border: 1px solid #fff;
+  padding: 7px;
+  box-shadow: 0px 1px 3px 0px #fff;
+  margin: 30px 5px;
 `
 
 
@@ -392,7 +426,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
   /**
    * keyword search feature
    **/
-  //const curSearchKeyword = useSelector(mSelector.makeSearchKeywordSelector())
+  const curSearchKeyword = useSelector(mSelector.makeSearchKeywordSelector())
   const handleSearchKeywordChangeEvent: React.EventHandler<React.ChangeEvent<HTMLInputElement>> = (e) => {
 
     // update keyword
@@ -408,7 +442,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
    **/
   const categorySearchInputRef = React.useRef<HTMLInputElement>(null)
   const curCategory = useSelector(mSelector.makeCurCategorySelector())
-  const [curCategorySearchKeyword, setCategorySearchKeyword] = React.useState<string>("")
+  const [curCategorySearchKeyword, setCategorySearchKeyword] = React.useState<string>(curCategory.attributes.title)
   const categories = useSelector(mSelector.makeCategoryWithFilterDataSelector(curCategorySearchKeyword))
   const handleCategorySearchChangeEvent: React.EventHandler<React.ChangeEvent<HTMLInputElement>> = (e) => {
     // filter category items and display those on the list
@@ -426,6 +460,9 @@ const Search: React.FunctionComponent<{}> = (props) => {
       console.log(nextCurCategoryId)
       // search this category by id through 'categories'
       const nextCurCategory: CategoryType = categories.find((category: CategoryType) => category.id == nextCurCategoryId)
+
+      // set current category search text (local state)
+      setCategorySearchKeyword(nextCurCategory.attributes.title)
 
       // update category search input
       categorySearchInputRef.current.value = nextCurCategory.attributes.title
@@ -540,17 +577,15 @@ const Search: React.FunctionComponent<{}> = (props) => {
 
   /**
    * initial anime fetch (only once)
+   *
+   *  - don't put pagination data into 2nd argument. => this cause fetch twice every time you change sort | filter | keyword
    *  
    **/
   React.useEffect(() => {
     dispatch(fetchAnimeActionCreator())
   }, [
-      // you don't need this (curSearchKeyword) when user change the query. 
-      // we also update this pagination.
-      //curSearchKeyword, 
-      curPagination.limit,
-      curPagination.offset,
-      curPagination.total,
+      curSearchKeyword, 
+      JSON.stringify(curSort),
       curCategory.id,
     ])
 
@@ -587,9 +622,18 @@ const Search: React.FunctionComponent<{}> = (props) => {
    *  - toggle category search & sort
    **/
   const [isAdditionalControllerOpen, setAdditionalControllerOpen] = React.useState<boolean>(false)
+  const additionalControllerRef = React.useRef<HTMLDivElement>(null)
   const handleAdditionalControllerOpenIconClick: React.EventHandler<React.MouseEvent<SVGElement>> = (e) => {
     setAdditionalControllerOpen((prev: boolean) => !prev)
   }
+  const handleAdditionalControllerCloseBtnClick: React.EventHandler<React.MouseEvent<HTMLInputElement>> = (e) => {
+    setAdditionalControllerOpen(false);
+  }
+  // close this when users click outside
+  useOutsideClick({
+    callback: () => setAdditionalControllerOpen(false),
+    ref: additionalControllerRef,
+  })
 
   /**
    * anime list item horizontal scroll
@@ -620,21 +664,46 @@ const Search: React.FunctionComponent<{}> = (props) => {
   }
 
   /**
+   * loading logic
+   *  - display loading component until we done with fetching
+   **/
+  const isLoading: FetchStatusEnum = useSelector(mSelector.makeFetchStatusSelector())
+
+  /**
+   * no result feature
+   *  - put 'clear all sort & filter btn to cancel all of them.
+   **/
+   const handleClearAllSortAndFilterBtn: React.EventHandler<React.MouseEvent<HTMLInputElement>> = (e) => {
+     setCategorySearchKeyword("")
+     dispatch(clearAllSortAndFilterActionCreator())
+   }
+
+  /**
    * render anime components
    *
    **/
   const renderAnimeComponents: () => React.ReactNode = () => {
     return curAnimes.map((anime: AnimeType) => {
       return (
-        <Anime key={anime.id} data-anime-id={anime.id} onClick={handleAnimeClickEvent}>
+        <Anime key={anime.id} >
           <AnimeImageHelper />
           {(responsive.isMobile &&
             <React.Fragment>
-              <AnimeImage src={anime.attributes.posterImage.small} alt={`${anime.attributes.titles.en} post image`} />
+              <AnimeImage
+                src={anime.attributes.posterImage.small}
+                alt={`${anime.attributes.titles.en} post image`}
+                data-anime-id={anime.id}
+                onClick={handleAnimeClickEvent}
+              />
             </React.Fragment>
           )}
           {(responsive.isTablet &&
-            <AnimeImage src={anime.attributes.posterImage.medium} alt={`${anime.attributes.titles.en} post image`} />
+            <AnimeImage
+              src={anime.attributes.posterImage.medium}
+              alt={`${anime.attributes.titles.en} post image`}
+              data-anime-id={anime.id}
+              onClick={handleAnimeClickEvent}
+            />
           )}
           {(responsive.isLaptop &&
             <React.Fragment>
@@ -668,16 +737,22 @@ const Search: React.FunctionComponent<{}> = (props) => {
       {/** left side bar: sort & filter **/}
       <SearchControllerBox>
         <SearchInputBox>
-          <SearchInput type="text" placeholder="search any anime..." name="search-keyword" onChange={handleSearchKeywordChangeEvent} />
+          <SearchInput type="text" placeholder="search any anime..." name="search-keyword" value={curSearchKeyword} onChange={handleSearchKeywordChangeEvent} />
           {(responsive.isLTETablet &&
             <SortI color={"#fff"} onClick={handleAdditionalControllerOpenIconClick} />
           )}
         </SearchInputBox>
-        <AdditionalControllerBox open={isAdditionalControllerOpen}>
+        <AdditionalControllerBox open={isAdditionalControllerOpen} ref={additionalControllerRef}>
           <CategoryFilterBox >
             <CategorySearchInputBox>
               <CategoryFilterTile>Category</CategoryFilterTile>
-              <CategorySearchInput type="text" placeholder="search by category..." onChange={handleCategorySearchChangeEvent} onKeyDown={handleArrowKeyDownEvent} ref={categorySearchInputRef} />
+              <CategorySearchInput 
+                type="text" 
+                placeholder="search by category..." 
+                value={curCategorySearchKeyword}
+                onChange={handleCategorySearchChangeEvent} 
+                onKeyDown={handleArrowKeyDownEvent} 
+                ref={categorySearchInputRef} />
               <CategorySearchResultBox >
                 <CategorySearchInnerBox>
                   {isCategorySuggestionShow && categories && categories.length > 0 && renderCategoryComponents()}
@@ -691,13 +766,29 @@ const Search: React.FunctionComponent<{}> = (props) => {
               {renderSortItemComponents()}
             </SortItemList>
           </SortBox>
+          {(responsive.isLTETablet &&
+            <AdditionalControllerCloseBtn type="button" value="Close" onClick={handleAdditionalControllerCloseBtnClick} />
+          )}
         </AdditionalControllerBox>
       </SearchControllerBox>
       {/** main: search result list with pagination **/}
       <SearchResultBox >
-        <ItemList onScroll={handleHorizontalScrollEvent} onWheel={handleHorizontalWheelEvent}>
-          {renderAnimeComponents()}
-        </ItemList>
+        {(isLoading === FetchStatusEnum.FETCHING &&
+          <Loading />
+        )}
+        {((isLoading === FetchStatusEnum.FAILED || curAnimes.length === 0) &&
+          <NoResultBox>
+            <NoResultMessage>
+              Opps, We don't have any anime here.
+            </NoResultMessage>
+            <ClearAllSortAndFilterBtn type="button" value="Clear All Sort & Filter" onClick={handleClearAllSortAndFilterBtn} />
+          </NoResultBox>
+        )}
+        {(isLoading === FetchStatusEnum.SUCCESS && curAnimes.length > 0 &&
+          <ItemList onScroll={handleHorizontalScrollEvent} onWheel={handleHorizontalWheelEvent}>
+            {renderAnimeComponents()}
+          </ItemList>
+        )}
       </SearchResultBox>
       <Pagination
         limit={curPagination.limit}
@@ -707,34 +798,27 @@ const Search: React.FunctionComponent<{}> = (props) => {
         onClick={handlePaginationClickEvent}
       />
       {(curSelectedAnime && responsive.isLTETablet &&
-      <AnimeDetailBox open={isAnimeDetailModalOpen}>
-        <AnimeTitle>
-          {curSelectedAnime.attributes.canonicalTitle}
-        </AnimeTitle>
-        <AnimeReleased>
-          Release Date: {toStringToDateToString(curSelectedAnime.attributes.startDate)}
-        </AnimeReleased>
-        <AnimeAverageRating>
-          Average Rating: {curSelectedAnime.attributes.averageRating}
-        </AnimeAverageRating>
-        <AnimeDetailControllerBox>
-          <AnimeTrailerLink href={`https://youtu.be/${curSelectedAnime.attributes.youtubeVideoId}`} target="_blank">
-            Watch The Trailer
-                  </AnimeTrailerLink>
-          <AnimeDetailCloseBtn type="button" value="Close" onClick={handleAnimeDetailBoxCloseEvent}/>
-        </AnimeDetailControllerBox>
-        <AnimeDescription>
-          {curSelectedAnime.attributes.description}
-        </AnimeDescription>
-      </AnimeDetailBox>
+        <AnimeDetailBox open={isAnimeDetailModalOpen}>
+          <AnimeTitle>
+            {curSelectedAnime.attributes.canonicalTitle}
+          </AnimeTitle>
+          <AnimeReleased>
+            Release Date: {toStringToDateToString(curSelectedAnime.attributes.startDate)}
+          </AnimeReleased>
+          <AnimeAverageRating>
+            Average Rating: {curSelectedAnime.attributes.averageRating}
+          </AnimeAverageRating>
+          <AnimeDetailControllerBox>
+            <AnimeTrailerLink href={`https://youtu.be/${curSelectedAnime.attributes.youtubeVideoId}`} target="_blank">
+              Watch The Trailer
+            </AnimeTrailerLink>
+            <AnimeDetailCloseBtn type="button" value="Close" onClick={handleAnimeDetailBoxCloseEvent} />
+          </AnimeDetailControllerBox>
+          <AnimeDescription>
+            {curSelectedAnime.attributes.description}
+          </AnimeDescription>
+        </AnimeDetailBox>
       )}
-      {/**
-      <AnimeDetailModal
-        isOpen={isAnimeDetailModalOpen}
-        anime={curSelectedAnime}
-        onCloseClick={handleAnimeDetailCloseClick}
-      />
-      **/}
     </SearchBox>
   )
 }

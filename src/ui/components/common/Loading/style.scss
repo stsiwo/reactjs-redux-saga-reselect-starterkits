@@ -1,0 +1,87 @@
+/* variables for loading animation */
+// need to use #{} inside css function like 'calc' 
+/* variable can hold 'unit' like 'px' and calculate the value with it  */
+$width: 100px;
+$radius: 10px;
+$top: calc(#{$width} / 2 - #{$radius});
+$circle: calc(#{$radius} * 2);
+$pos1: 0; /** left **/
+$pos2: calc(#{$width} / 2 - #{$radius}); /** center **/
+$pos3: calc(#{$width} - #{$circle}); /** right **/
+$move: calc(#{$width} / 2 - #{$radius});
+
+
+
+.loading-wrapper {         
+  display: flex;           
+  justify-content: center; 
+  align-items: center;     
+  width: 100%;             
+  height: 100%;
+}
+
+.loading-box {
+  text-align: center;
+}
+
+.lds-ellipsis {
+  vertical-align: middle;  
+  display: inline-block;
+  position: relative;
+  width: $width; 
+  height: $width;
+}
+
+.lds-ellipsis div {
+  position: absolute;
+  top: $top;
+  width: $circle;
+  height: $circle;
+  border-radius: 50%;
+  background: #000;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+
+.lds-ellipsis div:nth-child(1) {
+  left: $pos1;
+  animation: lds-ellipsis1 0.6s infinite;
+} 
+
+.lds-ellipsis div:nth-child(2) {
+  left: $pos1;
+  animation: lds-ellipsis2 0.6s infinite;
+} 
+.lds-ellipsis div:nth-child(3) {
+  left: $pos2;
+  animation: lds-ellipsis2 0.6s infinite;
+} 
+.lds-ellipsis div:nth-child(4) {
+  left: $pos3;
+  animation: lds-ellipsis3 0.6s infinite;
+}     
+@keyframes lds-ellipsis1 {
+  0% {    
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }       
+}         
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate($move, 0);
+  }
+}
+
+
