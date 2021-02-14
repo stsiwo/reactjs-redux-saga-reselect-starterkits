@@ -91,7 +91,7 @@ const ClearAllSortAndFilterBtn = styled.input`
 
 const ItemList = styled.div`
 
-  overflow: scroll;
+  overflow: hidden;
   white-space: nowrap;
   width: 100vw;
   height: 100%;
@@ -584,7 +584,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
   React.useEffect(() => {
     dispatch(fetchAnimeActionCreator())
   }, [
-      curSearchKeyword, 
+      curSearchKeyword,
       JSON.stringify(curSort),
       curCategory.id,
     ])
@@ -639,22 +639,63 @@ const Search: React.FunctionComponent<{}> = (props) => {
    * anime list item horizontal scroll
    **/
   // laptop & desktop: we need to use onWheel
+  const curScrollPosXRef = React.useRef<number>(0)
+  const curAnimeListRefs = React.useRef<HTMLDivElement[]>([]);
   const handleHorizontalWheelEvent: React.EventHandler<React.WheelEvent<HTMLDivElement>> = (e) => {
     // deltaY is used to determine wheel is up or down 
     // return "+" value when scroll down
     // return "-" value when scroll up 
+    //if (e.deltaY > 0) {
+    //  // scroll down
+    //  e.currentTarget.scrollBy({
+    //    behavior: "smooth",
+    //    left: 200,
+    //  })
+    //} else {
+    //  // scroll up
+    //  e.currentTarget.scrollBy({
+    //    behavior: "smooth",
+    //    left: -200,
+    //  })
+    //}
+    if (curAnimeListRefs.current.length === 0) return false
+
+    console.log("max scroll: " + (e.currentTarget.scrollWidth - e.currentTarget.clientWidth))
+    const maxWidth = - (e.currentTarget.scrollWidth - e.currentTarget.clientWidth)
+
     if (e.deltaY > 0) {
       // scroll down
-      e.currentTarget.scrollBy({
-        behavior: "smooth",
-        left: 200,
-      })
-    } else {
-      // scroll up
-      e.currentTarget.scrollBy({
-        behavior: "smooth",
-        left: -200,
-      })
+      console.log("scroll down")
+
+        if (curScrollPosXRef.current <= maxWidth) return false
+
+        curScrollPosXRef.current -= 40 
+
+        console.log(curScrollPosXRef.current)
+
+        for (let i = 0; i < curAnimeListRefs.current.length; i++) {
+          console.log("running?")
+          curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
+          curAnimeListRefs.current[i].style.transition = `transform 1s`
+        }
+
+    } else if (e.deltaY < 0) {
+      // scroll up 
+      console.log("scroll up")
+
+        if (curScrollPosXRef.current >= 0) return false 
+
+        curScrollPosXRef.current += 40 
+
+        console.log(curScrollPosXRef.current)
+
+        for (let i = 0; i < curAnimeListRefs.current.length; i++) {
+          console.log("running?")
+
+          curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
+          curAnimeListRefs.current[i].style.transition = `transform 1s`
+        }
+
     }
   }
 
@@ -673,19 +714,19 @@ const Search: React.FunctionComponent<{}> = (props) => {
    * no result feature
    *  - put 'clear all sort & filter btn to cancel all of them.
    **/
-   const handleClearAllSortAndFilterBtn: React.EventHandler<React.MouseEvent<HTMLInputElement>> = (e) => {
-     setCategorySearchKeyword("")
-     dispatch(clearAllSortAndFilterActionCreator())
-   }
+  const handleClearAllSortAndFilterBtn: React.EventHandler<React.MouseEvent<HTMLInputElement>> = (e) => {
+    setCategorySearchKeyword("")
+    dispatch(clearAllSortAndFilterActionCreator())
+  }
 
   /**
    * render anime components
    *
    **/
   const renderAnimeComponents: () => React.ReactNode = () => {
-    return curAnimes.map((anime: AnimeType) => {
+    return curAnimes.map((anime: AnimeType, index: number) => {
       return (
-        <Anime key={anime.id} >
+        <Anime key={anime.id} ref={(el) => curAnimeListRefs.current[index] = el}>
           <AnimeImageHelper />
           {(responsive.isMobile &&
             <React.Fragment>
@@ -746,12 +787,12 @@ const Search: React.FunctionComponent<{}> = (props) => {
           <CategoryFilterBox >
             <CategorySearchInputBox>
               <CategoryFilterTile>Category</CategoryFilterTile>
-              <CategorySearchInput 
-                type="text" 
-                placeholder="search by category..." 
+              <CategorySearchInput
+                type="text"
+                placeholder="search by category..."
                 value={curCategorySearchKeyword}
-                onChange={handleCategorySearchChangeEvent} 
-                onKeyDown={handleArrowKeyDownEvent} 
+                onChange={handleCategorySearchChangeEvent}
+                onKeyDown={handleArrowKeyDownEvent}
                 ref={categorySearchInputRef} />
               <CategorySearchResultBox >
                 <CategorySearchInnerBox>
