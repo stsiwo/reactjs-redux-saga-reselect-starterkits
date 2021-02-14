@@ -292,8 +292,11 @@ declare type CategoryItemPropsType = {
 }
 
 const CategoryItem = styled.div`
-  ${(props: CategoryItemPropsType) => (props.active) ? "background-color: #fff;" : "#000"}  
-  ${(props: CategoryItemPropsType) => (props.active) ? "color: #000;" : "#fff"}  
+  background-color: ${(props: CategoryItemPropsType) => (props.active) ? "#000" : "#fff"};
+  color: ${(props: CategoryItemPropsType) => (props.active) ? "#fff" : "#000"};  
+
+  padding: 5px;
+  border: 1px solid #000;
 `
 
 const SortBox = styled.div`

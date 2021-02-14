@@ -249,6 +249,8 @@ export const mSelector = {
              *
              * case insensitive
              *
+             * only return max 5 items
+             *
              **/
             if (
               category.attributes.title.toUpperCase().indexOf(categoryKeyword.toUpperCase()) !== -1
@@ -258,7 +260,7 @@ export const mSelector = {
             } else {
               return false
             }
-          })
+          }).slice(0, 5)
 
         console.log("after filter")
         console.log(filteredCategories)
