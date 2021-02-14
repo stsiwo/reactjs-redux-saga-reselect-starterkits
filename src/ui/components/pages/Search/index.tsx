@@ -36,6 +36,7 @@ const SearchControllerBox = styled.div`
   @media ${device.laptop} {
     flex: 0 0 15%;
   }
+  z-index: 1000;
 `
 
 const SearchInputBox = styled.div`
@@ -87,6 +88,7 @@ const AnimeImage = styled.img`
   vertical-align: middle; //(image-vertical-align)
   max-height: 100%;
   max-width: auto;
+  box-shadow: 0px 7px 15px -2px rgb(84, 84, 84);
 `
 
 declare type AnimeDetailBoxPropsType = {
@@ -187,13 +189,17 @@ const Anime = styled.div`
   // flex: make the container block, which means that the next element comes next vertically.
 
   display: inline-block; //(image-vertical-align)
-  margin: 10px 30px;
+  margin: 10px;
   height: 90%; //(image-vertical-align)
 
+  position: relative;
 
   &:hover > ${AnimeDetailBox} {
     opacity: 1;
     visibility: visible;
+  }
+
+  @media ${device.mobileOnly} {
   }
 
 `
