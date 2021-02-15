@@ -22,6 +22,7 @@ $move: calc(#{$width} / 2 - #{$radius});
 
 .loading-box {
   text-align: center;
+  color: #fff;
 }
 
 .lds-ellipsis {
@@ -38,7 +39,7 @@ $move: calc(#{$width} / 2 - #{$radius});
   width: $circle;
   height: $circle;
   border-radius: 50%;
-  background: #000;
+  background: #fff;
   animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
 

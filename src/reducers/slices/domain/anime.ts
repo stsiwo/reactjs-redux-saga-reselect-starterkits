@@ -74,19 +74,19 @@ export const updateAnimePaginationDataSlice = createSlice({
      **/
     update: (state: DomainPaginationType, action: PayloadAction<DomainPaginationType>) => action.payload,
     clear: (state: DomainPaginationType) => ({
-      limit: 10,
-      offset: 0,
-      total: 0,
-    })
+        limit: 10,
+        offset: 0,
+        total: 0,
+      }), 
   },
   extraReducers: (builder) => {
     builder.addCase(
       clearAllSortAndFilterActionCreator,
       (state: DomainPaginationType) => ({
-      limit: 10,
-      offset: 0,
-      total: 0,
-    })
+        limit: 10,
+        offset: 0,
+        total: 0,
+      }) 
     )
   }
 })

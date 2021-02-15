@@ -1,13 +1,14 @@
 import SortI from 'components/common/icons/SortI';
-import Pagination from 'components/common/Pagination';
 import Loading from 'components/common/Loading';
+import Pagination from 'components/common/Pagination';
+import SwipeAnimation from 'components/common/SwipeAnimation';
 import { AnimeType } from 'domain/anime';
 import { CategoryType } from 'domain/category';
 import { useOutsideClick } from 'hooks/outsideClick';
 import { useResponsive } from 'hooks/responsive';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { curCategoryActions, curSortActions, searchKeywordActions, clearAllSortAndFilterActionCreator } from 'reducers/slices/app';
+import { clearAllSortAndFilterActionCreator, curCategoryActions, curSortActions, searchKeywordActions } from 'reducers/slices/app';
 import { fetchAnimeActionCreator, updateAnimePaginationDataActions } from 'reducers/slices/domain/anime';
 import { fetchCategoryActionCreator } from 'reducers/slices/domain/categories';
 import { FetchStatusEnum, SortType } from 'src/app';
@@ -72,6 +73,8 @@ const NoResultBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100%;
+  flex-direction: column;
 `
 
 const NoResultMessage = styled.p`
@@ -409,7 +412,11 @@ const Search: React.FunctionComponent<{}> = (props) => {
    *
    *  - update pagination object of this domain in store
    *  - useEffect takes care of re-fetching
+   *
+   *  - use boolean local state (isPageUpdated) to avoid re-rendering twice
+   *  - 
    **/
+  const [isPageUpdated, setPageUpdated] = React.useState<boolean>(false)
   const handlePaginationClickEvent: React.EventHandler<React.MouseEvent<HTMLInputElement>> = (e) => {
 
     // prep next pagiantion
@@ -421,6 +428,8 @@ const Search: React.FunctionComponent<{}> = (props) => {
 
     // update state
     dispatch(updateAnimePaginationDataActions.update(nextPagination))
+
+    setPageUpdated((prev: boolean) => !prev)
   }
 
   /**
@@ -433,8 +442,6 @@ const Search: React.FunctionComponent<{}> = (props) => {
     const nextKeyword: string = e.currentTarget.value
     dispatch(searchKeywordActions.update(nextKeyword))
 
-    // cancel pagination
-    dispatch(updateAnimePaginationDataActions.clear())
   }
 
   /**
@@ -532,7 +539,8 @@ const Search: React.FunctionComponent<{}> = (props) => {
         // setCurCategoryId(nextCurCategoryId)
 
         // cancel pagination
-        dispatch(updateAnimePaginationDataActions.clear())
+        // #DOUBT
+        //dispatch(updateAnimePaginationDataActions.clear())
 
         setCategorySuggestionShow(false)
       }
@@ -553,13 +561,14 @@ const Search: React.FunctionComponent<{}> = (props) => {
     dispatch(curSortActions.update(nextSort))
 
     // cancel pagination
-    dispatch(updateAnimePaginationDataActions.clear())
+    // #DOUBT
+    //dispatch(updateAnimePaginationDataActions.clear())
   }
 
   const renderSortItemComponents: () => React.ReactNode = () => {
     return sortList.map((sort: SortType) => {
       return (
-        <SortItem active={(curSort) ? curSort.key.localeCompare(sort.key) === 0 : false}>
+        <SortItem active={(curSort) ? curSort.key.localeCompare(sort.key) === 0 : false} key={sort.key}>
           <input
             type="radio"
             id={sort.key}
@@ -586,6 +595,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
   }, [
       curSearchKeyword,
       JSON.stringify(curSort),
+      isPageUpdated,
       curCategory.id,
     ])
 
@@ -667,34 +677,34 @@ const Search: React.FunctionComponent<{}> = (props) => {
       // scroll down
       console.log("scroll down")
 
-        if (curScrollPosXRef.current <= maxWidth) return false
+      if (curScrollPosXRef.current <= maxWidth) return false
 
-        curScrollPosXRef.current -= 40 
+      curScrollPosXRef.current -= 50 
 
-        console.log(curScrollPosXRef.current)
+      console.log(curScrollPosXRef.current)
 
-        for (let i = 0; i < curAnimeListRefs.current.length; i++) {
-          console.log("running?")
-          curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
-          curAnimeListRefs.current[i].style.transition = `transform 1s`
-        }
+      for (let i = 0; i < curAnimeListRefs.current.length; i++) {
+        console.log("running?")
+        curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
+        curAnimeListRefs.current[i].style.transition = `transform 1s`
+      }
 
     } else if (e.deltaY < 0) {
       // scroll up 
       console.log("scroll up")
 
-        if (curScrollPosXRef.current >= 0) return false 
+      if (curScrollPosXRef.current >= 0) return false
 
-        curScrollPosXRef.current += 40 
+      curScrollPosXRef.current += 50 
 
-        console.log(curScrollPosXRef.current)
+      console.log(curScrollPosXRef.current)
 
-        for (let i = 0; i < curAnimeListRefs.current.length; i++) {
-          console.log("running?")
+      for (let i = 0; i < curAnimeListRefs.current.length; i++) {
+        console.log("running?")
 
-          curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
-          curAnimeListRefs.current[i].style.transition = `transform 1s`
-        }
+        curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
+        curAnimeListRefs.current[i].style.transition = `transform 1s`
+      }
 
     }
   }
@@ -831,13 +841,15 @@ const Search: React.FunctionComponent<{}> = (props) => {
           </ItemList>
         )}
       </SearchResultBox>
-      <Pagination
-        limit={curPagination.limit}
-        offset={curPagination.offset}
-        total={curPagination.total}
-        btnNum={5}
-        onClick={handlePaginationClickEvent}
-      />
+      {(curPagination &&
+        <Pagination
+          limit={curPagination.limit}
+          offset={curPagination.offset}
+          total={curPagination.total}
+          btnNum={5}
+          onClick={handlePaginationClickEvent}
+        />
+      )}
       {(curSelectedAnime && responsive.isLTETablet &&
         <AnimeDetailBox open={isAnimeDetailModalOpen}>
           <AnimeTitle>
@@ -860,6 +872,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
           </AnimeDescription>
         </AnimeDetailBox>
       )}
+      <SwipeAnimation />
     </SearchBox>
   )
 }

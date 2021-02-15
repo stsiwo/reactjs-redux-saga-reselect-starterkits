@@ -1,4 +1,4 @@
-import { css } from "styled-components";
+import { css, keyframes } from "styled-components";
 
 /**
  * responsive 
@@ -48,5 +48,19 @@ export const BaseInputBtnStyle = css`
   color: #fff;
   margin: 3px 5px;
 
+`
+
+export const ShowUpKeyFrames = keyframes`
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 `
 
