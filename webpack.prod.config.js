@@ -13,7 +13,7 @@ module.exports = merge(common, {
   output: {
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/',
+    publicPath: '/reactjs-redux-saga-reselect-starterkits/',
   },
   plugins: [
     new webpack.HashedModuleIdsPlugin(),
