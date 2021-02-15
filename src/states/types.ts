@@ -1,4 +1,4 @@
-import { FetchStatusEnum, SortType } from "src/app/";
+import { FetchStatusEnum, SortType, RequestTrackerType } from "src/app/";
 import { NormalizedAnimeType } from "domain/anime";
 import { CategoryType } from "domain/category";
 
@@ -19,6 +19,7 @@ export declare type AppStateType = {
   curCategory: CategoryType
   curSort: SortType
   sortList: SortType[]
+  requestTracker: RequestTrackerType
 }
 
 export declare type DomainPaginationType = {

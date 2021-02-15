@@ -103,6 +103,7 @@ export const initialState: StateType = {
         label: "Lower Rating"
       },
     ],
+    requestTracker: {}
   },
   domain: {
     animes: {

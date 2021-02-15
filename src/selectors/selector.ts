@@ -39,6 +39,7 @@ export const rsSelector = {
     getCurCategory: (state: StateType) => state.app.curCategory,
     getCurSort: (state: StateType) => state.app.curSort,
     getSortList: (state: StateType) => state.app.sortList,
+    getRequestTracker: (state: StateType) => state.app.requestTracker,
   },
 
   domain: {
@@ -155,6 +156,18 @@ export const mSelector = {
       ],
       (sortList) => {
         return sortList
+      },
+    )
+  },
+
+  // app.requestTracker
+  makeRequestTrackerSelector: () => {
+    return createSelector(
+      [
+        rsSelector.app.getRequestTracker
+      ],
+      (requestTracker) => {
+        return requestTracker
       },
     )
   },

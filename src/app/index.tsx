@@ -1,3 +1,5 @@
+import { DomainPaginationType } from "states/types";
+
 export enum FetchStatusEnum {
   INITIAL = "INITIAL",
   FETCHING = "FETCHING",
@@ -8,4 +10,13 @@ export enum FetchStatusEnum {
 export declare type SortType = {
   key: string
   label: string
+}
+
+export type RequestTrackerBaseType = {
+  ids: string[]
+  pagination?: DomainPaginationType
+}
+
+export declare type RequestTrackerType  = {
+  [key: string]: RequestTrackerBaseType
 }

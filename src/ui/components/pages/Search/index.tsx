@@ -17,6 +17,7 @@ import { convertPageToOffset, toStringToDateToString } from 'src/utils';
 import { DomainPaginationType } from 'states/types';
 import styled from 'styled-components';
 import { BaseInputBtnStyle, BaseInputStyle, device } from 'ui/css/base';
+import CloseI from 'components/common/icons/CloseI';
 
 const SearchBox = styled.div`
   width: 100vw;
@@ -305,6 +306,14 @@ const CategorySearchInput = styled.input`
  }
 `
 
+const CategoryResetIcon = styled(CloseI)`
+  width: 25px;
+  height: 25px;
+  vertical-align: middle;
+  cursor: pointer;
+
+`
+
 const CategorySearchResultBox = styled.div`
   position: relative; // for CategoryItem styling
   width: 90%;
@@ -442,6 +451,9 @@ const Search: React.FunctionComponent<{}> = (props) => {
     const nextKeyword: string = e.currentTarget.value
     dispatch(searchKeywordActions.update(nextKeyword))
 
+    // cancel pagination
+    dispatch(updateAnimePaginationDataActions.clear())
+
   }
 
   /**
@@ -456,6 +468,12 @@ const Search: React.FunctionComponent<{}> = (props) => {
     setCategorySuggestionShow(true)
     const nextCategorySearchKeyword = e.currentTarget.value
     setCategorySearchKeyword(nextCategorySearchKeyword)
+  }
+
+  // reset category selection
+  const handleCategoryResetIconClick: React.EventHandler<React.MouseEvent<SVGElement>> = (e) => {
+    setCategorySearchKeyword("")
+    dispatch(curCategoryActions.clear())
   }
 
   //const [curCategoryId, setCurCategoryId] = React.useState<number>(-1) // put default value (-1) to avoid 'calling toSTring() of undefined'
@@ -493,6 +511,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
     return categories.map((category: CategoryType, index: number) => {
       return (
         <CategoryItem
+          key={category.id}
           data-value={category.id}
           onClick={handleCategorySelectionClickEvent}
           active={(curSelectedCategorySuggestionItemIndex == index) ? true : false}
@@ -539,8 +558,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
         // setCurCategoryId(nextCurCategoryId)
 
         // cancel pagination
-        // #DOUBT
-        //dispatch(updateAnimePaginationDataActions.clear())
+        dispatch(updateAnimePaginationDataActions.clear())
 
         setCategorySuggestionShow(false)
       }
@@ -561,8 +579,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
     dispatch(curSortActions.update(nextSort))
 
     // cancel pagination
-    // #DOUBT
-    //dispatch(updateAnimePaginationDataActions.clear())
+    dispatch(updateAnimePaginationDataActions.clear())
   }
 
   const renderSortItemComponents: () => React.ReactNode = () => {
@@ -733,7 +750,6 @@ const Search: React.FunctionComponent<{}> = (props) => {
         curAnimeListRefs.current[i].style.transition = `transform 1s`
       }
 
-
     } else if (curTouchEnd < curTouchStart.current) {
       // left swipe
       console.log("left swipe => show right item")
@@ -843,6 +859,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
                 onChange={handleCategorySearchChangeEvent}
                 onKeyDown={handleArrowKeyDownEvent}
                 ref={categorySearchInputRef} />
+              <CategoryResetIcon onClick={handleCategoryResetIconClick}/>
               <CategorySearchResultBox >
                 <CategorySearchInnerBox>
                   {isCategorySuggestionShow && categories && categories.length > 0 && renderCategoryComponents()}
