@@ -2,8 +2,6 @@ import { all, call, spawn } from 'redux-saga/effects';
 import { fetchAnimeWatcher, fetchCategoryWatcher, leftNavMenuWatcher } from './watchers';
 
 export function* rootSaga() {
-  console.log("start rootSaga ...")
-
 
   /**
    *
@@ -20,7 +18,6 @@ export function* rootSaga() {
    * keep everything (e.g., child tasks) alive 
    *   - disconnect all children watchers with this rootSaga 
    **/
-
   yield all(sagas.map((saga) =>
     spawn(function*() {
       while (true) {
@@ -34,5 +31,4 @@ export function* rootSaga() {
     }))
   );
 
-  console.log("end rootSaga ...")
 }

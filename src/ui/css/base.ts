@@ -53,14 +53,17 @@ export const BaseInputBtnStyle = css`
 export const ShowUpKeyFrames = keyframes`
   0% {
     opacity: 0;
+    visibility: hidden;
   }
 
   50% {
     opacity: 1;
+    visibility: visible;
   }
 
   100% {
     opacity: 0;
+    visibility: hidden;
   }
 `
 

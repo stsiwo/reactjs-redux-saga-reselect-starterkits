@@ -7,6 +7,8 @@ export declare type ScreenSizeStatusType = {
   isDesktop: boolean           
   isLTETablet: boolean         
   isLTELaptop: boolean         
+  isLandscape: boolean
+  isTouchDevice: boolean
 }   
       
 export declare type ResponsiveStatusPropType = {
@@ -24,5 +26,7 @@ export declare type UseResponsiveStatusOutputType = {
   isDesktop: boolean       
   isLTETablet: boolean         
   isLTELaptop: boolean         
+  isLandscape: boolean
+  isTouchDevice: boolean
 }     
 

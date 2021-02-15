@@ -100,8 +100,6 @@ const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
 
     // scroll with transform
     for (let i = 0; i < curAnimeListRefs.current.length; i++) {
-      console.log("running?")
-
       curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
       curAnimeListRefs.current[i].style.transition = `transform 1s`
     }

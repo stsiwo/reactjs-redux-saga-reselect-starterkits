@@ -99,7 +99,6 @@ const CategoryFilter: React.FunctionComponent<CategoryFilterPropsType> = ({
     if (categorySearchInputRef.current) {
       const nextCurCategoryId: number = parseInt(e.currentTarget.getAttribute("data-value"))
 
-      console.log(nextCurCategoryId)
       // search this category by id through 'categories'
       const nextCurCategory: CategoryType = categories.find((category: CategoryType) => category.id == nextCurCategoryId)
 
@@ -108,8 +107,6 @@ const CategoryFilter: React.FunctionComponent<CategoryFilterPropsType> = ({
 
       // update category search input
       categorySearchInputRef.current.value = nextCurCategory.attributes.title
-
-      console.log(nextCurCategory)
 
       // update curCategory (app state)
       dispatch(curCategoryActions.update(nextCurCategory))
@@ -145,8 +142,6 @@ const CategoryFilter: React.FunctionComponent<CategoryFilterPropsType> = ({
         dispatch(curCategorySearchKeywordActions.update(nextCategorySearchKeyword))
         // search this category by id through 'categories'
         const nextCurCategory: CategoryType = categories.find((category: CategoryType) => category.id == nextCurCategoryId)
-
-        console.log(nextCurCategory)
 
         // update curCategory (app state)
         dispatch(curCategoryActions.update(nextCurCategory))

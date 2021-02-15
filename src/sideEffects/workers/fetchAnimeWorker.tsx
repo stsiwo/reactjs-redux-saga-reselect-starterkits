@@ -58,19 +58,12 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
     targetUrl += `&sort=${curSort.key}`
   }
 
-  console.log("target url: ")
-  console.log(targetUrl)
-
   // return empty object if does not exist
   const targetRequestTrackerBase: RequestTrackerBaseType = yield call(requestUrlCheckWorker, targetUrl)
-
-  console.log("request tracker base")
-  console.log(targetRequestTrackerBase)
 
   if (targetRequestTrackerBase) {
     // target url exists
 
-    console.log("target url exists at fetchAnimeWorker")
     /**
      * update curItems of this request
      **/
@@ -88,7 +81,6 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
   } else {
     // target url does not exist
     
-    console.log("target url does not exist at fetchAnimeWorker")
     /**
      * update status for anime data
      **/
@@ -108,14 +100,10 @@ export function* fetchAnimeWorker(action: PayloadAction<{}>) {
         url: targetUrl,
       })
 
-      console.log(response)
-      console.log(response.data.data)
-
       /**
        * normalize response data
        **/
       const normalizedData = normalize(response.data.data, animeSchemaArray)
-      console.log(normalizedData)
 
       /**
        * update anime domain in state

@@ -88,19 +88,19 @@ export const initialState: StateType = {
         label: "Old"
       },
       {
-        key:  "titles", // desc
-        label: "Title Asc"
+        key:  "-favoritesCount", // desc
+        label: "More Favorites Count"
       },
       {
-        key:  "-titles", // desc
-        label: "Title Desc"
-      },
-      {
-        key:  "averageRating", // desc
-        label: "Higher Rating"
+        key:  "favoritesCount", // desc
+        label: "Less Favorites Count"
       },
       {
         key:  "-averageRating", // desc
+        label: "Higher Rating"
+      },
+      {
+        key:  "averageRating", // desc
         label: "Lower Rating"
       },
     ],

@@ -2,6 +2,9 @@ import * as React from 'react';
 import styled from 'styled-components';
 import { device, ShowUpKeyFrames } from 'ui/css/base';
 import SwipeArrowI from '../icons/SwipeArrowI';
+import { useResponsive } from 'hooks/responsive';
+import { useOrientation } from 'hooks/orientation';
+import { OrientationEnum } from 'hooks/orientation/types';
 
 
 const Box = styled.div`
@@ -36,16 +39,20 @@ const AnimatedSwipeArrowI = styled(SwipeArrowI)`
   height: 25px;  
   color: #fff; 
   opacity: 0;
+  visibility: hidden;
 `
 
 const Message = styled.div`
   color: #fff;
   opacity: 0;
+  visiblity: hidden;
   animation: ${ShowUpKeyFrames} 1s 1.4s 5;
   text-transform: uppercase;
 `
 
 const SwipeAnimation: React.FunctionComponent<{}> = (props) => {
+
+  const responsive = useResponsive()
 
   return (
     <Box>
@@ -55,9 +62,16 @@ const SwipeAnimation: React.FunctionComponent<{}> = (props) => {
         <AnimatedSwipeArrowI />       
         <AnimatedSwipeArrowI />       
       </InnerBox>
-      <Message>
-        Swipe Right 
-      </Message>
+        {(responsive.isTouchDevice && 
+          <Message>
+            Swipe Right 
+          </Message>
+        )}
+        {(!responsive.isTouchDevice && 
+          <Message>
+            Scroll Down 
+          </Message>
+        )}
     </Box>
   )
 }

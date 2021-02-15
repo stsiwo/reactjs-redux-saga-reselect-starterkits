@@ -22,31 +22,22 @@ import { mSelector } from "src/selectors/selector";
  *      - takeLatest pick the action and cancel the previous action if it hasn't done yet.
  **/
 export function* requestUrlCheckWorker(targetUrl: string) {
-  console.log("start handling an action at requestUrlCheckWorker")
 
   // get requestList state from redux store 
   // * you need to use 'yield' with 'select'
   // does this 'yield' pause code here??
   const requestTrackerState: RequestTrackerType  = yield select(mSelector.makeRequestTrackerSelector())
 
-  console.log("current request list: ")
-  console.log(requestTrackerState)
-
   // check the target url already exist in requestList state
   // 'find' function return 'undefined' when it could not satisfied the condition.
   
   const isExist = Object.prototype.hasOwnProperty.call(requestTrackerState, targetUrl)
 
-  console.log("target url exists?: " + isExist)
-
   if (!isExist) {
-    console.log("the request have never fetched before at requestUrlCheckWorker")
-
     // target url does not exist in requestUrl, so need to fetch from backend api
     return null 
 
   } else {
-    console.log("the request have fetched before at requestUrlCheckWorker")
     // target url exists in requestUrl, so guide to cache (redux-store) because data already exist in it
     // don't need to do anything.
     return requestTrackerState[targetUrl]
