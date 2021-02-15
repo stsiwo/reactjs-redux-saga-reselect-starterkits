@@ -132,6 +132,7 @@ const SortLabel = styled.label`
   width: 100%;
   white-space: nowrap;
   padding: 0 5px;
+  cursor: pointer;
 `
 
 export declare type SearchControllerPropsType = {

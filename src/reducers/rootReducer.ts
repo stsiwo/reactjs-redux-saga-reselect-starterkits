@@ -22,7 +22,7 @@ export const rootReducer = combineReducers({
     fetchStatus: fetchStatusSliceReducer,
     categoryFetchStatus: categoryFetchStatusSliceReducer,
     curCategory: curCategorySliceReducer,
-    curCategorySearchkeyword: curCategorySearchKeywordSliceReducer,
+    curCategorySearchKeyword: curCategorySearchKeywordSliceReducer,
     curSort: curSortSliceReducer,
     sortList: sortListSliceReducer,
     requestTracker: requestTrackerSliceReducer,
