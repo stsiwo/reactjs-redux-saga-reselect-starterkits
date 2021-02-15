@@ -655,19 +655,6 @@ const Search: React.FunctionComponent<{}> = (props) => {
     // deltaY is used to determine wheel is up or down 
     // return "+" value when scroll down
     // return "-" value when scroll up 
-    //if (e.deltaY > 0) {
-    //  // scroll down
-    //  e.currentTarget.scrollBy({
-    //    behavior: "smooth",
-    //    left: 200,
-    //  })
-    //} else {
-    //  // scroll up
-    //  e.currentTarget.scrollBy({
-    //    behavior: "smooth",
-    //    left: -200,
-    //  })
-    //}
     if (curAnimeListRefs.current.length === 0) return false
 
     console.log("max scroll: " + (e.currentTarget.scrollWidth - e.currentTarget.clientWidth))
@@ -710,9 +697,61 @@ const Search: React.FunctionComponent<{}> = (props) => {
   }
 
   // mobile & tablet swipe
-  const handleHorizontalScrollEvent: React.EventHandler<React.UIEvent<HTMLDivElement>> = (e) => {
-    console.log("scrolled")
-  }
+     
+  // (ref) current position where touch starts
+  const curTouchStart = React.useRef<number>(0)
+  // event handler triggered when a user starts touching the screen
+  const handleTouchStartEvent: React.EventHandler<React.TouchEvent<HTMLDivElement>> = React.useCallback((e) => {
+    curTouchStart.current = e.touches[0].clientX
+  }, [
+  ])
+
+  // event handler triggered when a user ends touching the screen
+  const handleTouchMoveEvent: React.EventHandler<React.TouchEvent<HTMLDivElement>> = React.useCallback((e) => {
+
+    // get the position where the user ends touching
+    const curTouchEnd = e.touches[0].clientX
+
+    const maxWidth = - (e.currentTarget.scrollWidth - e.currentTarget.clientWidth)
+
+    // 2. decide the right/left swipe based on the curTouchStart and curTouchEnd
+    if (curTouchEnd > curTouchStart.current) {
+      // right swipe
+
+      console.log("right swipe => show left item")
+
+      if (curScrollPosXRef.current >= 0) return false
+
+      curScrollPosXRef.current += 50 
+
+      console.log(curScrollPosXRef.current)
+
+      for (let i = 0; i < curAnimeListRefs.current.length; i++) {
+        console.log("running?")
+
+        curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
+        curAnimeListRefs.current[i].style.transition = `transform 1s`
+      }
+
+
+    } else if (curTouchEnd < curTouchStart.current) {
+      // left swipe
+      console.log("left swipe => show right item")
+
+      if (curScrollPosXRef.current <= maxWidth) return false
+
+      curScrollPosXRef.current -= 50 
+
+      console.log(curScrollPosXRef.current)
+
+      for (let i = 0; i < curAnimeListRefs.current.length; i++) {
+        console.log("running?")
+        curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
+        curAnimeListRefs.current[i].style.transition = `transform 1s`
+      }
+    }
+  }, [
+    ])
 
   /**
    * loading logic
@@ -836,7 +875,11 @@ const Search: React.FunctionComponent<{}> = (props) => {
           </NoResultBox>
         )}
         {(isLoading === FetchStatusEnum.SUCCESS && curAnimes.length > 0 &&
-          <ItemList onScroll={handleHorizontalScrollEvent} onWheel={handleHorizontalWheelEvent}>
+          <ItemList 
+            onTouchStart={handleTouchStartEvent} 
+            onTouchMove={handleTouchMoveEvent} 
+            onWheel={handleHorizontalWheelEvent}
+          >
             {renderAnimeComponents()}
           </ItemList>
         )}
