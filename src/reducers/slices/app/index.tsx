@@ -165,6 +165,42 @@ export const curCategorySliceReducer = curCategorySlice.reducer
 export const curCategoryActions = curCategorySlice.actions
 
 /**
+ * app.curCategorySearchKeyword state Slice
+ **/
+export type curCategorySearchKeywordUpdateActionType = PayloadAction<string>
+
+export const curCategorySearchKeywordSlice = createSlice({
+  name: "app/curCategorySearchKeyword", // a name used in action type
+  initialState: null,
+  reducers: {
+    /**
+     *
+     *  a property name gonna be the name of action
+     *  its value is the reduce
+     *
+     *  If you need to define the param of the action, use PayloadAction<X> to define its type.
+     *  In this use case, I need to an string param, so I define 'payloadAction<string' like below
+     *
+     **/
+    update: (state: string, action: curCategorySearchKeywordUpdateActionType) => action.payload,
+    clear: (state: string) => "" 
+  },
+  /**
+   * extraReducers property
+   *
+   * You can respond to other action types besides the types it has generated.
+   **/
+  extraReducers: (builder) => {
+    builder.addCase(
+      clearAllSortAndFilterActionCreator,
+      (state: string) => "" 
+    )
+  }
+})
+
+export const curCategorySearchKeywordSliceReducer = curCategorySearchKeywordSlice.reducer
+export const curCategorySearchKeywordActions = curCategorySearchKeywordSlice.actions
+/**
  * app.curSort state Slice
  **/
 export type curSortUpdateActionType = PayloadAction<SortType>

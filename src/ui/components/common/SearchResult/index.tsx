@@ -1,15 +1,15 @@
-import * as React from 'react';
-import styled from 'styled-components';
-import { FetchStatusEnum } from 'src/app';
-import { useSelector, useDispatch } from 'react-redux';
-import { mSelector } from 'src/selectors/selector';
-import { BaseInputBtnStyle } from 'ui/css/base';
-import { clearAllSortAndFilterActionCreator } from 'reducers/slices/app';
 import { AnimeType } from 'domain/anime';
-import Anime from '../Anime';
-import Loading from '../Loading';
 import { useResponsive } from 'hooks/responsive';
+import * as React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearAllSortAndFilterActionCreator, curCategorySearchKeywordActions } from 'reducers/slices/app';
+import { FetchStatusEnum } from 'src/app';
+import { mSelector } from 'src/selectors/selector';
+import styled from 'styled-components';
+import { BaseInputBtnStyle } from 'ui/css/base';
+import Anime from '../Anime';
 import AnimeDetailForSmall from '../AnimeDetailForSmall';
+import Loading from '../Loading';
 
 const NoResultBox = styled.div`
   display: flex;
@@ -27,7 +27,6 @@ const ClearAllSortAndFilterBtn = styled.input`
   ${BaseInputBtnStyle}
   font-weight: bold;
   font-size: 1em;
-
   border: 1px solid #fff;
   padding: 7px;
   box-shadow: 0px 1px 3px 0px #fff;
@@ -53,14 +52,10 @@ const ItemList = styled.div`
 
 export declare type SearchResultPropsType = {
   className?: string // this is required by 'styled-components` to wrap non-styled component (normal react component)
-  curCategorySearchKeyword: string
-  setCategorySearchKeyword: React.Dispatch<React.SetStateAction<string>>
 }
 
 const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
   className,
-  curCategorySearchKeyword,
-  setCategorySearchKeyword,
 }) => {
 
   // redux dispatcher
@@ -74,10 +69,11 @@ const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
    **/
   const curAnimes: AnimeType[] = useSelector(mSelector.makeAnimeDataSelector())
 
-
   /**
    * anime list item horizontal scroll
    **/
+  const unitScrollMove = 50;
+
   // laptop & desktop: we need to use onWheel
   const curAnimeListRefs = React.useRef<HTMLDivElement[]>([]);
   const curScrollPosXRef = React.useRef<number>(0)
@@ -87,54 +83,39 @@ const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
     // return "-" value when scroll up 
     if (curAnimeListRefs.current.length === 0) return false
 
-    console.log("max scroll: " + (e.currentTarget.scrollWidth - e.currentTarget.clientWidth))
     const maxWidth = - (e.currentTarget.scrollWidth - e.currentTarget.clientWidth)
 
     if (e.deltaY > 0) {
+
       // scroll down
-      console.log("scroll down")
-
       if (curScrollPosXRef.current <= maxWidth) return false
-
-      curScrollPosXRef.current -= 50 
-
-      console.log(curScrollPosXRef.current)
-
-      for (let i = 0; i < curAnimeListRefs.current.length; i++) {
-        console.log("running?")
-        curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
-        curAnimeListRefs.current[i].style.transition = `transform 1s`
-      }
+      curScrollPosXRef.current -= unitScrollMove
 
     } else if (e.deltaY < 0) {
+
       // scroll up 
-      console.log("scroll up")
-
       if (curScrollPosXRef.current >= 0) return false
+      curScrollPosXRef.current += unitScrollMove
+    }
 
-      curScrollPosXRef.current += 50 
+    // scroll with transform
+    for (let i = 0; i < curAnimeListRefs.current.length; i++) {
+      console.log("running?")
 
-      console.log(curScrollPosXRef.current)
-
-      for (let i = 0; i < curAnimeListRefs.current.length; i++) {
-        console.log("running?")
-
-        curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
-        curAnimeListRefs.current[i].style.transition = `transform 1s`
-      }
-
+      curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
+      curAnimeListRefs.current[i].style.transition = `transform 1s`
     }
   }
 
   // mobile & tablet swipe
-     
+
   // (ref) current position where touch starts
   const curTouchStart = React.useRef<number>(0)
   // event handler triggered when a user starts touching the screen
   const handleTouchStartEvent: React.EventHandler<React.TouchEvent<HTMLDivElement>> = React.useCallback((e) => {
     curTouchStart.current = e.touches[0].clientX
   }, [
-  ])
+    ])
 
   // event handler triggered when a user ends touching the screen
   const handleTouchMoveEvent: React.EventHandler<React.TouchEvent<HTMLDivElement>> = React.useCallback((e) => {
@@ -142,42 +123,28 @@ const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
     // get the position where the user ends touching
     const curTouchEnd = e.touches[0].clientX
 
+    // get max scroll width
     const maxWidth = - (e.currentTarget.scrollWidth - e.currentTarget.clientWidth)
 
-    // 2. decide the right/left swipe based on the curTouchStart and curTouchEnd
+    // decide the right/left swipe based on the curTouchStart and curTouchEnd
     if (curTouchEnd > curTouchStart.current) {
+
       // right swipe
-
-      console.log("right swipe => show left item")
-
       if (curScrollPosXRef.current >= 0) return false
-
-      curScrollPosXRef.current += 50 
-
-      console.log(curScrollPosXRef.current)
-
-      for (let i = 0; i < curAnimeListRefs.current.length; i++) {
-        console.log("running?")
-
-        curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
-        curAnimeListRefs.current[i].style.transition = `transform 1s`
-      }
+      curScrollPosXRef.current += unitScrollMove
 
     } else if (curTouchEnd < curTouchStart.current) {
+
       // left swipe
-      console.log("left swipe => show right item")
-
       if (curScrollPosXRef.current <= maxWidth) return false
+      curScrollPosXRef.current -= unitScrollMove
 
-      curScrollPosXRef.current -= 50 
+    }
 
-      console.log(curScrollPosXRef.current)
-
-      for (let i = 0; i < curAnimeListRefs.current.length; i++) {
-        console.log("running?")
-        curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
-        curAnimeListRefs.current[i].style.transition = `transform 1s`
-      }
+    // scroll with transform
+    for (let i = 0; i < curAnimeListRefs.current.length; i++) {
+      curAnimeListRefs.current[i].style.transform = `translate3d(${curScrollPosXRef.current}px, 0, 0)`
+      curAnimeListRefs.current[i].style.transition = `transform 1s`
     }
   }, [
     ])
@@ -188,6 +155,7 @@ const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
    **/
   const [isAnimeDetailModalOpen, setAnimeDetailModalOpen] = React.useState<boolean>(false)
   const [curSelectedAnime, setSelectedAnime] = React.useState<AnimeType>(null)
+
   const handleAnimeClickEvent: React.EventHandler<React.MouseEvent<HTMLDivElement>> = (e) => {
     const nextAnimeId = e.currentTarget.getAttribute("data-anime-id")
 
@@ -199,10 +167,6 @@ const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
 
     // open the modal
     setAnimeDetailModalOpen(true)
-  }
-
-  const handleAnimeDetailCloseClick: React.EventHandler<React.MouseEvent<SVGElement>> = (e) => {
-    setAnimeDetailModalOpen(false)
   }
 
   const handleAnimeDetailBoxCloseEvent: React.EventHandler<React.MouseEvent<HTMLInputElement>> = (e) => {
@@ -220,7 +184,7 @@ const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
    *  - put 'clear all sort & filter btn to cancel all of them.
    **/
   const handleClearAllSortAndFilterBtn: React.EventHandler<React.MouseEvent<HTMLInputElement>> = (e) => {
-    setCategorySearchKeyword("")
+    dispatch(curCategorySearchKeywordActions.clear())
     dispatch(clearAllSortAndFilterActionCreator())
   }
 
@@ -231,10 +195,10 @@ const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
   const renderAnimeComponents: () => React.ReactNode = () => {
     return curAnimes.map((anime: AnimeType, index: number) => {
       return (
-        <Anime 
-          key={anime.id} 
-          anime={anime} 
-          curAnimeListRefs={curAnimeListRefs} 
+        <Anime
+          key={anime.id}
+          anime={anime}
+          curAnimeListRefs={curAnimeListRefs}
           index={index} // array index used for this array refs
           handleAnimeClickEvent={handleAnimeClickEvent}
         />
@@ -267,7 +231,7 @@ const SearchResult: React.FunctionComponent<SearchResultPropsType> = ({
       )}
       {/** anime detail (only mobile & tablet) **/}
       {(curSelectedAnime && responsive.isLTETablet &&
-        <AnimeDetailForSmall 
+        <AnimeDetailForSmall
           curSelectedAnime={curSelectedAnime}
           open={isAnimeDetailModalOpen}
           handleAnimeDetailBoxCloseEvent={handleAnimeDetailBoxCloseEvent}

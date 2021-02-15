@@ -14,21 +14,7 @@ import { device } from 'ui/css/base';
 const SearchBox = styled.div`
   width: 100vw;
   height: 100vh;
-
   background-color: #000;
-
-  @media ${device.laptop} {
-  }
-
-`
-const SearchResultBox = styled.div`
-
-  padding-top: 85px; // space for header controller
-  height: 100%;
-
-  @media ${device.laptop} {
-  }
-
 `
 
 const Search: React.FunctionComponent<{}> = (props) => {
@@ -41,10 +27,6 @@ const Search: React.FunctionComponent<{}> = (props) => {
   const curSort = useSelector(mSelector.makeCurSortSelector())
   const curSearchKeyword = useSelector(mSelector.makeSearchKeywordSelector())
   const curCategory = useSelector(mSelector.makeCurCategorySelector())
-
-  // category search keyword
-  //   - put this in parent since it is required by useEffect for fetching
-  const [curCategorySearchKeyword, setCategorySearchKeyword] = React.useState<string>(curCategory.attributes.title)
 
   /**
    * pagination
@@ -74,6 +56,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
     // update state
     dispatch(updateAnimePaginationDataActions.update(nextPagination))
 
+    // update pagination boolean (local state)
     setPageUpdated((prev: boolean) => !prev)
   }
 
@@ -82,6 +65,7 @@ const Search: React.FunctionComponent<{}> = (props) => {
    * initial anime fetch (only once)
    *
    *  - don't put pagination data into 2nd argument. => this cause fetch twice every time you change sort | filter | keyword
+   *    - instead, put pagination bool local state
    *  
    **/
   React.useEffect(() => {
@@ -100,15 +84,9 @@ const Search: React.FunctionComponent<{}> = (props) => {
   return (
     <SearchBox>
       {/** left side bar: sort & filter **/}
-      <SearchController 
-        curCategorySearchKeyword={curCategorySearchKeyword} 
-        setCategorySearchKeyword={setCategorySearchKeyword} 
-      />
+      <SearchController />
       {/** main: search result list **/}
-      <SearchResult 
-        curCategorySearchKeyword={curCategorySearchKeyword} 
-        setCategorySearchKeyword={setCategorySearchKeyword} 
-      />
+      <SearchResult />
       {/** pagination **/}
       {(curPagination &&
         <Pagination

@@ -76,6 +76,7 @@ export const initialState: StateType = {
         description: "",
       }
     }, // set fake default category object to avoid null error for the 2nd arg in useEffect
+    curCategorySearchKeyword: "",
     curSort: null,
     sortList: [
       {

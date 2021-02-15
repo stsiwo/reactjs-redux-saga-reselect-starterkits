@@ -1,7 +1,7 @@
 import { CategoryType } from 'domain/category';
 import * as React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { curCategoryActions } from 'reducers/slices/app';
+import { curCategoryActions, curCategorySearchKeywordActions } from 'reducers/slices/app';
 import { updateAnimePaginationDataActions } from 'reducers/slices/domain/anime';
 import { fetchCategoryActionCreator } from 'reducers/slices/domain/categories';
 import { mSelector } from 'src/selectors/selector';
@@ -77,20 +77,20 @@ const CategoryFilter: React.FunctionComponent<CategoryFilterPropsType> = ({
   /**
    * category search feature
    **/
+  const curCategorySearchKeyword = useSelector(mSelector.makeCurCategorySearchKeywordSelector())
   const categorySearchInputRef = React.useRef<HTMLInputElement>(null)
-  const curCategory = useSelector(mSelector.makeCurCategorySelector())
   const categories = useSelector(mSelector.makeCategoryWithFilterDataSelector(curCategorySearchKeyword))
   const handleCategorySearchChangeEvent: React.EventHandler<React.ChangeEvent<HTMLInputElement>> = (e) => {
     // filter category items and display those on the list
     setCategorySuggestionShow(true)
     const nextCategorySearchKeyword = e.currentTarget.value
-    setCategorySearchKeyword(nextCategorySearchKeyword)
+    dispatch(curCategorySearchKeywordActions.update(nextCategorySearchKeyword))
   }
 
   // reset category selection
   const handleCategoryResetIconClick: React.EventHandler<React.MouseEvent<SVGElement>> = (e) => {
-    setCategorySearchKeyword("")
     dispatch(curCategoryActions.clear())
+    dispatch(curCategorySearchKeywordActions.clear())
   }
 
   //const [curCategoryId, setCurCategoryId] = React.useState<number>(-1) // put default value (-1) to avoid 'calling toSTring() of undefined'
@@ -103,8 +103,8 @@ const CategoryFilter: React.FunctionComponent<CategoryFilterPropsType> = ({
       // search this category by id through 'categories'
       const nextCurCategory: CategoryType = categories.find((category: CategoryType) => category.id == nextCurCategoryId)
 
-      // set current category search text (local state)
-      setCategorySearchKeyword(nextCurCategory.attributes.title)
+      // set current category search text (redux state)
+      dispatch(curCategorySearchKeywordActions.update(nextCurCategory.attributes.title))
 
       // update category search input
       categorySearchInputRef.current.value = nextCurCategory.attributes.title
@@ -142,7 +142,7 @@ const CategoryFilter: React.FunctionComponent<CategoryFilterPropsType> = ({
         const nextCategorySearchKeyword = categories[curSelectedCategorySuggestionItemIndex].attributes.title
         const nextCurCategoryId = categories[curSelectedCategorySuggestionItemIndex].id
         e.currentTarget.value = nextCategorySearchKeyword
-        setCategorySearchKeyword(nextCategorySearchKeyword)
+        dispatch(curCategorySearchKeywordActions.update(nextCategorySearchKeyword))
         // search this category by id through 'categories'
         const nextCurCategory: CategoryType = categories.find((category: CategoryType) => category.id == nextCurCategoryId)
 
@@ -150,9 +150,6 @@ const CategoryFilter: React.FunctionComponent<CategoryFilterPropsType> = ({
 
         // update curCategory (app state)
         dispatch(curCategoryActions.update(nextCurCategory))
-
-        // update curCategoryId (local state)
-        // setCurCategoryId(nextCurCategoryId)
 
         // cancel pagination
         dispatch(updateAnimePaginationDataActions.clear())

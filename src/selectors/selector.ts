@@ -37,6 +37,7 @@ export const rsSelector = {
     getSearchKeyword: (state: StateType) => state.app.searchKeyword,
     getFetchStatus: (state: StateType) => state.app.fetchStatus,
     getCurCategory: (state: StateType) => state.app.curCategory,
+    getCurCategorySearchKeyword: (state: StateType) => state.app.curCategorySearchKeyword,
     getCurSort: (state: StateType) => state.app.curSort,
     getSortList: (state: StateType) => state.app.sortList,
     getRequestTracker: (state: StateType) => state.app.requestTracker,
@@ -132,6 +133,18 @@ export const mSelector = {
       ],
       (curCategory) => {
         return curCategory
+      },
+    )
+  },
+  
+  // app.curCategorySearchKeyword
+  makeCurCategorySearchKeywordSelector: () => {
+    return createSelector(
+      [
+        rsSelector.app.getCurCategorySearchKeyword
+      ],
+      (curCategorySearchKeyword) => {
+        return curCategorySearchKeyword
       },
     )
   },

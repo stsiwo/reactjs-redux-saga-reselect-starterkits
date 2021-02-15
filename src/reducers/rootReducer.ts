@@ -1,11 +1,8 @@
-import { combineReducers } from 'redux'
-import { leftNavMenuSliceReducer, rightNavMenuSliceReducer, searchModalSliceReducer } from './slices/ui';
-//import { blogDataSliceReducer } from './slices/domain/blogs';
-//import { tagDataSliceReducer } from './slices/domain/tags';
-//import { categoryDataSliceReducer } from './slices/domain/categories';
-import { searchKeywordSliceReducer, fetchStatusSliceReducer, curCategorySliceReducer, categoryFetchStatusSliceReducer, curSortSliceReducer, sortListSliceReducer, requestTrackerSliceReducer } from './slices/app';
-import { updateAnimeDataSliceReducer, updateAnimePaginationDataSliceReducer, updateAnimeCurItemsDataSliceReducer } from './slices/domain/anime';
+import { combineReducers } from 'redux';
+import { categoryFetchStatusSliceReducer, curCategorySearchKeywordSliceReducer, curCategorySliceReducer, curSortSliceReducer, fetchStatusSliceReducer, requestTrackerSliceReducer, searchKeywordSliceReducer, sortListSliceReducer } from './slices/app';
+import { updateAnimeCurItemsDataSliceReducer, updateAnimeDataSliceReducer, updateAnimePaginationDataSliceReducer } from './slices/domain/anime';
 import { categoryDataSliceReducer } from './slices/domain/categories';
+import { leftNavMenuSliceReducer, rightNavMenuSliceReducer, searchModalSliceReducer } from './slices/ui';
 
 // ** REFACTOR to new approach **/
 
@@ -25,6 +22,7 @@ export const rootReducer = combineReducers({
     fetchStatus: fetchStatusSliceReducer,
     categoryFetchStatus: categoryFetchStatusSliceReducer,
     curCategory: curCategorySliceReducer,
+    curCategorySearchkeyword: curCategorySearchKeywordSliceReducer,
     curSort: curSortSliceReducer,
     sortList: sortListSliceReducer,
     requestTracker: requestTrackerSliceReducer,

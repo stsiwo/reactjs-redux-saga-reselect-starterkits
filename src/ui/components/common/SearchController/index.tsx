@@ -11,18 +11,6 @@ import { BaseInputBtnStyle, BaseInputStyle, device } from 'ui/css/base';
 import CategoryFilter from '../CategoryFilter';
 import SortI from '../icons/SortI';
 
-const SearchControllerBox = styled.div`
-  background-color: #000;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  @media ${device.laptop} {
-    flex: 0 0 15%;
-  }
-  z-index: 1000;
-`
-
 const SearchInputBox = styled.div`
   display: flex;
   justify-content: flex-end;
@@ -30,9 +18,7 @@ const SearchInputBox = styled.div`
   z-index: 1000; 
   position: relative; // need this to make z-index work;
   background-color: #000; // need this to make z-index work;
-
   padding: 5px;
-
   height: 50px;
 `
 
@@ -86,7 +72,6 @@ const AdditionalControllerCloseBtn = styled.input`
   ${BaseInputBtnStyle}
   font-weight: bold;
   font-size: 1em;
-
   border: 1px solid #fff;
   padding: 7px;
   box-shadow: 0px 1px 3px 0px #fff;
@@ -150,12 +135,11 @@ const SortLabel = styled.label`
 `
 
 export declare type SearchControllerPropsType = {
-  curCategorySearchKeyword: string,
-  setCategorySearchKeyword: React.Dispatch<React.SetStateAction<string>>
+  className?: string
 }
+
 const SearchController: React.FunctionComponent<SearchControllerPropsType> = ({ 
-  curCategorySearchKeyword,
-  setCategorySearchKeyword
+  className,
 }) => {
 
   // redux dispatcher
@@ -236,7 +220,7 @@ const SearchController: React.FunctionComponent<SearchControllerPropsType> = ({
 
 
   return (
-      <SearchControllerBox>
+      <div className={className}>
         <SearchInputBox>
           <SearchInput type="text" placeholder="search any anime..." name="search-keyword" value={curSearchKeyword} onChange={handleSearchKeywordChangeEvent} />
           {(responsive.isLTETablet &&
@@ -244,9 +228,7 @@ const SearchController: React.FunctionComponent<SearchControllerPropsType> = ({
           )}
         </SearchInputBox>
         <AdditionalControllerBox open={isAdditionalControllerOpen} ref={additionalControllerRef}>
-          <CategoryFilter 
-      
-          />
+          <CategoryFilter />
           <SortBox>
             <SortTitle>Sort</SortTitle>
             <SortItemList>
@@ -257,10 +239,20 @@ const SearchController: React.FunctionComponent<SearchControllerPropsType> = ({
             <AdditionalControllerCloseBtn type="button" value="Close" onClick={handleAdditionalControllerCloseBtnClick} />
           )}
         </AdditionalControllerBox>
-      </SearchControllerBox>
+      </div>
   )
 }
 
-export default SearchController 
+export default styled(SearchController)`
+  background-color: #000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  @media ${device.laptop} {
+    flex: 0 0 15%;
+  }
+  z-index: 1000;
+`
 
 

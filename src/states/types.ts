@@ -17,6 +17,7 @@ export declare type AppStateType = {
   fetchStatus: FetchStatusEnum
   categoryFetchStatus: FetchStatusEnum
   curCategory: CategoryType
+  curCategorySearchKeyword: string
   curSort: SortType
   sortList: SortType[]
   requestTracker: RequestTrackerType
