@@ -40,8 +40,6 @@ export const GlobalStyle = createGlobalStyle`
   html {
     width: 100%;
     font-size: 62.5%;
-    /* prevent horizontal scroll (overflow) at mobile */
-    overflow-x: hidden;
     /* disable 'bounce' effect or 'refresh' effect when scroll position top or bottom */
     /* not sure this is working or not */
     /* values:  */
@@ -58,6 +56,11 @@ export const GlobalStyle = createGlobalStyle`
     position: relative;
   }
 
+  /* prevent overflow on mobile */
+  html, body {
+    overflow-x:hidden
+  }
+
   a {
     text-decoration: none;
   }
@@ -69,6 +72,11 @@ export const GlobalStyle = createGlobalStyle`
 
   input[type="search"] {
     -webkit-appearance: none;
+  }
+
+  /* prevent input zoom (ios) on mobile */
+  input {
+    font-size: 16px;
   }
 
 `
