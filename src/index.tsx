@@ -5,12 +5,13 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
-import 'ui/css/common.scss';
+import { GlobalStyle } from 'ui/css/base';
         
 const Index = (props: any) => {
 
   return (
     <React.Fragment> 
+      <GlobalStyle />
       <CssGlobalContext.Provider value={CssGlobalContextDefaultState}>
         <Provider store={store}>
           <Router>

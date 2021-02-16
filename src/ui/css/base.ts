@@ -1,4 +1,4 @@
-import { css, keyframes } from "styled-components";
+import { css, keyframes, createGlobalStyle } from "styled-components";
 
 /**
  * responsive 
@@ -32,6 +32,48 @@ export const device = {
 /**
  * base 'styled' style
  **/
+export const GlobalStyle = createGlobalStyle`
+  * {
+    box-sizing: border-box;
+
+  }
+  html {
+    width: 100%;
+    font-size: 62.5%;
+    /* prevent horizontal scroll (overflow) at mobile */
+    overflow-x: hidden;
+    /* disable 'bounce' effect or 'refresh' effect when scroll position top or bottom */
+    /* not sure this is working or not */
+    /* values:  */
+    / *  - 'contain': default but no scroll chaining */
+    / *  - 'none': neither bounce/refresh nor scroll chaining */
+    overscroll-behavior: none;
+  }
+
+  body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 1.6em;
+    margin: 0;
+    /* prevent horizontal scroll (overflow) at mobile */
+    position: relative;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  /* turn off iPhone/Safari input element rounding */
+  input {
+    border-radius: 0;
+  }
+
+  input[type="search"] {
+    -webkit-appearance: none;
+  }
+
+`
+
+
 export const BaseInputStyle = css`
   border: none;
   border-bottom: 1px solid #fff;
