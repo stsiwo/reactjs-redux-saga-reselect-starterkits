@@ -86,7 +86,6 @@ const Search: React.FunctionComponent<{}> = (props) => {
       {/** left side bar: sort & filter **/}
       <SearchController />
       {/** main: search result list **/}
-      <SearchResult />
       {/** pagination **/}
       {(curPagination &&
         <Pagination
