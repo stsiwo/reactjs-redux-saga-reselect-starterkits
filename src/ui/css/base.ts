@@ -52,13 +52,14 @@ export const GlobalStyle = createGlobalStyle`
     font-family: "Times New Roman", Times, serif;
     font-size: 1.6em;
     margin: 0;
-    /* prevent horizontal scroll (overflow) at mobile */
-    position: relative;
   }
 
-  /* prevent overflow on mobile */
+  /* prevent overflow on mobile (disable all scrollbar x and y) */
   html, body {
-    overflow-x:hidden
+    overflow: hidden;
+  }
+  body {
+    position: relative;
   }
 
   a {
